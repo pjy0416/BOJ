@@ -1,6 +1,6 @@
 import java.util.Scanner;
 
-public class test_11365 {			// 14136 KB  104 ms
+public class Test_11365 {			// 14136 KB  104 ms
 	static final int size = 100;
 	
 	private static String reverseString(String s) {

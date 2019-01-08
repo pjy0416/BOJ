@@ -1,13 +1,13 @@
-import java.util.Arrays;
 import java.util.Scanner;
 
 public class test_11658 {			// time over code....	¾Æ¸¶ String Array¸¦ int Array·Î parseÇÏ´Â ºÎºÐ¿¡¼­ ½Ã°£ÀÌ °É¸®´Âµí....
 	
-	static int[] parseIntArr(String[] strArr, int[] intArr) {
-		intArr = Arrays.stream(strArr).mapToInt(Integer::parseInt).toArray();
-		
-		return intArr;
-	}
+//	static int[] parseIntArr(String[] strArr, int[] intArr) {
+//				
+//		intArr = Arrays.stream(strArr).mapToInt(Integer::parseInt).toArray();
+//		
+//		return intArr;
+//	}
 	
 	static int[][] initArr(int arrLen, Scanner scan) {
 		int[][] result = new int[arrLen][];
@@ -15,8 +15,16 @@ public class test_11658 {			// time over code....	¾Æ¸¶ String Array¸¦ int Array·
 		for(int i=0; i<arrLen; i++) {
 			String inputStr = scan.nextLine();
 			String[] inputArr = inputStr.split(" ");
+
+			int idx =0;
+			int len = inputArr.length;
+			result[i] = new int[len];
 			
-			result[i] = parseIntArr(inputArr, result[i]);
+			for(String str : inputArr) {
+				result[i][idx++] = Integer.parseInt(str);
+			}
+			
+//			result[i] = parseIntArr(inputArr, result[i]);
 		}
 		
 		return result;
@@ -26,11 +34,17 @@ public class test_11658 {			// time over code....	¾Æ¸¶ String Array¸¦ int Array·
 		for(int i=0; i<querySize; i++) {
 			int[] query = queries[i];
 			int len = query.length;
-			if(len == 4) {	
-				arr = arrayModifier(arr, query, arrSize, querySize);
-			}else if(len == 5) {
-				System.out.println(addSection(arr, query, arrSize, querySize));
-			}	
+			
+			switch (len) {
+				case 4 :
+					arr = arrayModifier(arr, query, arrSize, querySize);					
+					break;
+				case 5 :
+					System.out.println(addSection(arr, query, arrSize, querySize));
+					break;
+				default : 
+					break;
+			}
 		}
 	}
 	
@@ -54,7 +68,6 @@ public class test_11658 {			// time over code....	¾Æ¸¶ String Array¸¦ int Array·
 		
 		for(int x=startX; x<=endX; x++) {
 			for(int y=startY; y<=endY; y++) {
-				System.out.print(arr[x][y] +"\t");
 				result += arr[x][y];
 			}
 		}
