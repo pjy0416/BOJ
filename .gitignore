@@ -1,6 +1,9 @@
 # All
 .metadata
 .recommenders
+.idea
+out
 # User-specific stuff
 RemoteSystemsTempFiles
 BOJ/bin
+BOJ/BOJ.iml

@@ -1,6 +1,6 @@
 import java.util.Scanner;
 
-public class test_9733 {								// Æ²¸°ÄÚµå¤Ñ..... ÀÌÀ¯¸¦ ¸ð¸£°ÚÀ½
+public class test_9733 {								// Æ²ï¿½ï¿½ï¿½Úµï¿½ï¿½..... ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ð¸£°ï¿½ï¿½ï¿½
 	private final static int size = 7;
 	private final static String[] workName = {"Re","Pt","Cc","Ea","Tb","Cm","Ex", "Total"};
 	
