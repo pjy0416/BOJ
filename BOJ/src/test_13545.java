@@ -58,12 +58,6 @@ public class test_13545 {			// over time code
 		printResult(result, querySize);
 	}
 	
-	private static String[] saveSeqs(int seqSize) throws IOException{
-		String[] result = br.readLine().split(" ");
-
-		return result;
-	}
-	
 	static void printResult(int[] queryResults, int querySize) {
 		for(int i=0; i<querySize; i++) {
 			System.out.println(queryResults[i]);
@@ -74,7 +68,7 @@ public class test_13545 {			// over time code
 		String[] seqs;	// 수열을 담을 array 선언
 		
 		int seqSize = Integer.parseInt(br.readLine());		// input a array's size
-		seqs = saveSeqs(seqSize);
+		seqs = br.readLine().split(" ");
 
 		int querySize = Integer.parseInt(br.readLine());
 		runQuery(querySize, seqs);
