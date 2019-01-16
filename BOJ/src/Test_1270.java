@@ -6,7 +6,7 @@ import java.util.*;
 public class Test_1270 {        // 런타임 에러
 
     static void numCountFunc(String[] arr, int size, HashMap<Integer,Integer> map) {
-        for(int idx =1; idx<=size; idx++) {
+        for(int idx =1; idx<=size; idx++) {         // 해당 병사 number counting
             int key = Integer.parseInt(arr[idx]);
             if(map.containsKey(key)) {
                 int count = map.get(key) +1;
@@ -30,31 +30,18 @@ public class Test_1270 {        // 런타임 에러
 
         Iterator<Integer> keys = keyArrays.iterator();								// key값 들을 Iteator에 저장
 
-        int prev =0;
-        int count =0;
         String result ="";
         while(keys.hasNext()) {
             int key = keys.next();
             int value = map.get(key);			// Map에서 해당 숫자의 cnt를 가져옴
 
-//            System.out.println("##################### key = " + key + " \t value = " + value);
-
-            if(value <= size/2 && count ==0) {
+            if(value > size/2) {
+                result = String.valueOf(key);
+                break;
+            } else {
                 result = "SYJKGW";
                 break;
             }
-
-            if(prev == value) {
-                result = "SYJKGW";
-                break;
-            }else if(prev != value && count !=0){
-                break;
-            }
-
-            prev = value;
-            count++;
-            result = String.valueOf(key);
-
         }
         return result;
     }
@@ -69,6 +56,7 @@ public class Test_1270 {        // 런타임 에러
             HashMap<Integer, Integer> map= new HashMap<>();
 
             String input = br.readLine();
+
             String[] arr = input.split(" ");
             int size = Integer.parseInt(arr[0]);
 
