@@ -1,80 +1,59 @@
-import java.util.Scanner;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.HashMap;
 
-public class test_9733 {								// Ʋ���ڵ��..... ������ �𸣰���
+public class test_9733 {				// 마지막 테스트케이스에서 계속 틀림
 	private final static int size = 7;
-	private final static String[] workName = {"Re","Pt","Cc","Ea","Tb","Cm","Ex", "Total"};
+	private final static String[] workName = {"Re","Pt","Cc","Ea","Tb","Cm","Ex","Total"};
 	
-	private static int[] addCnts(String[] works) {
-		int[] workCnt = new int[size+1];
-		int len = works.length; 
-		
-		for(int i=0; i<len; i++) {
-			judgeWork(works[i], workCnt);
-			workCnt[size]++;
-		}
-		
-		return workCnt;
-	}
-	
-	private static void judgeWork(String work, int[] workCnt) {
-		if (work.equals(workName[0])) {
-			workCnt[0]++;
-		} else if (work.equals(workName[1])) {
-			workCnt[1]++;
-		} else if (work.equals(workName[2])) {
-			workCnt[2]++;
-		} else if (work.equals(workName[3])) {
-			workCnt[3]++;
-		} else if (work.equals(workName[4])) {
-			workCnt[4]++;
-		} else if (work.equals(workName[5])) {
-			workCnt[5]++;
-		} else if (work.equals(workName[6])) {
-			workCnt[6]++;
-		} 
-	}
-	 
-	private static double[] calWorkRatio(int[] workCnt) {
-		double[] workRatio = new double[size+1];
-		
-		double allCnt = workCnt[size];
-		for(int i=0; i<size; i++) {
-			workRatio[i] = workCnt[i]/allCnt;
-		}
-		workRatio[size] = 1.00;
-		
-		if(allCnt ==0) {
-			for(int i=0; i<size; i++) {
-				workRatio[i] =0.00;
+	private static HashMap<String,Integer> addCnt(String str) {
+		String[] works = str.split(" ");
+
+		HashMap<String, Integer> workList = new HashMap<>();
+		for(String work : works) {
+			if(workList.containsKey(work)) {
+				int value = workList.get(work) + 1;
+				workList.replace(work, value);
+			} else {
+				workList.put(work, 1);
 			}
 		}
-		return workRatio;
+
+		int total = works.length;
+		workList.put(workName[size], total);
+
+		return workList;
 	}
 	
-	private static void printWork(int[] workCnt, double[] workRatio) {
-		for(int i=0; i<size+1; i++) {
-			System.out.println(workName[i] +" " + workCnt[i]+ " " + String.format("%.2f", workRatio[i]));
+	private static void calRatio(HashMap<String, Integer> workList) {
+		float total = workList.get(workName[size]);
+		for(String work : workName) {
+			int cnt = 0;
+			float ratio =0.00f;
+
+			if(workList.containsKey(work)) {
+				cnt = workList.get(work);
+				ratio = cnt / total;
+			}
+
+			printWork(work, cnt, ratio);
 		}
 	}
+
+	private static void printWork(String work, int cnt, float ratio) {
+		System.out.println(work + " " + cnt + " " + String.format("%.2f", ratio));
+	}
 	
-	public static void main(String[] args) {
-		Scanner scan = new Scanner(System.in);
-		String inputStr = scan.nextLine();
-		
-		String[] works= inputStr.split(" ");
-		if(works.length == 16) {
-			String tmp = scan.nextLine();
-			if(!tmp.equals("")) {
-				inputStr = inputStr.concat(" ").concat(tmp);
-				works = inputStr.split(" ");
-			} 
-		}
-		
-		int[] workCnt = addCnts(works);
-		double[] workRatio = calWorkRatio(workCnt);
-		printWork(workCnt, workRatio);
-		
-		scan.close();
+	public static void main(String[] args) throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		String inputStr = br.readLine() + " " + br.readLine();
+
+		HashMap<String, Integer> workList =addCnt(inputStr);
+
+		calRatio(workList);
+
+		br.close();
 	}
 
 }
