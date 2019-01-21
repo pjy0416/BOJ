@@ -2,7 +2,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-public class test_11658 {			// time over code....	add 부분에서 시간이 오래걸리는듯... 
+public class test_11658 {			// time over code....	add 부분에서 시간이 오래걸리는듯...
 	
 	static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
@@ -64,7 +64,6 @@ public class test_11658 {			// time over code....	add 부분에서 시간이 오래걸리는
 		int querySize = Integer.parseInt(sizes.split(" ")[1]);
 		
 		String[][] array = initArr(arrSize);
-
 		runQuery(array, querySize);
 
 		br.close();
