@@ -4,13 +4,13 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-public class Test_6987 {
+public class Test_6987 {        // wrongCode
     final static int testCase = 4;
     final static int team = 6;
 
     private static void printResult(Nation[][] nations) {
         for(int i=0; i<testCase; i++) {
-            if(canDraw(nations[i]) && canWinLose(nations[i])) {
+            if(canMatch(nations[i])) {
                 System.out.print("1 ");
             } else {
                 System.out.print("0 ");
@@ -18,43 +18,29 @@ public class Test_6987 {
         }
     }
 
-    private static boolean canWinLose(Nation[] nation) {
+    private static boolean canMatch(Nation[] nation) {
         int win =0;
         int lose =0;
+        int draw =0;
+        int drawSum =0;
+        int drawNation =0;
 
         for(int i=0; i<team; i++) {
             win += nation[i].getWin();
             lose += nation[i].getLose();
-        }
+            drawSum += nation[i].getDraw();
 
-        if(win != lose) {
-            return false;
-        }
-
-        return true;
-    }
-
-    private static boolean canDraw(Nation[] nation) {
-        int draw =0;
-        int nationCnt =0;
-        int drawSum =0;
-        for(int i=0; i<team; i++) {
-            int d = nation[i].getDraw();
-            if(d !=0) {
-                nationCnt++;
-                drawSum+= d;
+            if(nation[i].getDraw() !=0) {
+                drawNation++;
                 if(draw >0) {
-                    draw -= d;
+                    draw -= nation[i].getDraw();
                 } else {
-                    draw += d;
+                    draw += nation[i].getDraw();
                 }
             }
         }
 
-        if(draw != 0) {
-            return false;
-        }
-        if(drawSum >0 && nationCnt <2) {
+        if(win != lose) {
             return false;
         }
 
@@ -102,5 +88,14 @@ class Nation {
     }
     public int getLose() {
         return lose;
+    }
+    public void setWin(int w) {
+        win = w;
+    }
+    public void setDraw(int d) {
+        draw = d;
+    }
+    public void setLose(int l) {
+        lose = l;
     }
 }
