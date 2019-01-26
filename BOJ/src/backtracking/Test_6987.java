@@ -8,7 +8,7 @@ public class Test_6987 {        // wrongCode
     final static int testCase = 4;
     final static int team = 6;
 
-    private static void printResult(Nation[][] nations) {
+    private static void printResult(int[][] nations) {
         for(int i=0; i<testCase; i++) {
             if(canMatch(nations[i])) {
                 System.out.print("1 ");
@@ -18,29 +18,64 @@ public class Test_6987 {        // wrongCode
         }
     }
 
-    private static boolean canMatch(Nation[] nation) {
+    private static boolean canMatch(int[] nation) {
         int win =0;
         int lose =0;
         int draw =0;
         int drawSum =0;
         int drawNation =0;
+        int winMax =0;
+        int loseMax =0;
+        int prevWin =0;
+        int prevLose =0;
 
         for(int i=0; i<team; i++) {
-            win += nation[i].getWin();
-            lose += nation[i].getLose();
-            drawSum += nation[i].getDraw();
+            int tempWin = nation[i*3];
+            int tempDraw = nation[i*3 +1];
+            int tempLose = nation[i*3 +2];
 
-            if(nation[i].getDraw() !=0) {
+            win += tempWin;
+            lose += tempLose;
+            drawSum += tempDraw;
+
+            if(tempDraw !=0) {
                 drawNation++;
                 if(draw >0) {
-                    draw -= nation[i].getDraw();
+                    draw -= tempDraw;
                 } else {
-                    draw += nation[i].getDraw();
+                    draw += tempDraw;
                 }
             }
+
+            if(tempWin+tempDraw+tempLose != 5) {
+                return false;
+            }
+            if(tempWin >5 || tempDraw>5 || tempLose >5) {
+                return false;
+            }
+            if(tempWin ==5) {
+                if(winMax !=0) {
+                    return false;
+                }
+                winMax++;
+            }
+            if(tempLose ==5) {
+                if(loseMax !=0) {
+                    return false;
+                }
+                loseMax++;
+            }
+            prevWin = tempWin;
+            prevLose = tempLose;
         }
 
         if(win != lose) {
+            return false;
+        }
+        if(drawSum >0 && drawNation <=1) {
+            return false;
+        }
+        if(draw != 0) {
             return false;
         }
 
@@ -50,9 +85,7 @@ public class Test_6987 {        // wrongCode
     public static void main(String[] args) throws IOException {
         BufferedReader br =new BufferedReader(new InputStreamReader(System.in));
 
-        Nation[][] nations = new Nation[testCase][6];
-
-
+        int[][] nations = new int[testCase][team*3];
 
         for(int i=0; i<testCase; i++) {     // 입력
             String inputStr = br.readLine();
@@ -60,42 +93,15 @@ public class Test_6987 {        // wrongCode
                 int win = idx*3 *2;
                 int draw = (idx*3 +1)*2;
                 int lose = (idx*3 +2)*2;
-                nations[i][idx] = new Nation(inputStr.charAt(win)-'0', inputStr.charAt(draw)-'0', inputStr.charAt(lose)-'0');
+
+                nations[i][idx*3] = inputStr.charAt(win)-'0';
+                nations[i][idx*3+1] = inputStr.charAt(draw) -'0';
+                nations[i][idx*3+2] = inputStr.charAt(lose) - '0';
             }
         }
 
         printResult(nations);
 
-
         br.close();
-    }
-}
-
-class Nation {
-    private int win, draw, lose;
-
-    Nation(int w, int d, int l) {
-        win = w;
-        draw = d;
-        lose = l;
-    }
-
-    public int getWin() {
-        return win;
-    }
-    public int getDraw() {
-        return draw;
-    }
-    public int getLose() {
-        return lose;
-    }
-    public void setWin(int w) {
-        win = w;
-    }
-    public void setDraw(int d) {
-        draw = d;
-    }
-    public void setLose(int l) {
-        lose = l;
     }
 }
