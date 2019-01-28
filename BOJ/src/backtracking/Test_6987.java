@@ -18,7 +18,18 @@ public class Test_6987 {        // wrongCode
         }
     }
 
-    private static boolean canMatch(int[] nation) {
+    private static boolean isPromise(int[] nation) {        // 유망한지 검사하는 메소드를 만들어야하고
+
+
+        return true;
+    }
+
+    private static boolean canMatch(int[] nation) {         // 여기가 backTrack 메소드가 되야함
+        /*
+        if(isPromise(nation) {
+            //blah blah
+        }
+        */
         int win =0;
         int lose =0;
         int draw =0;
