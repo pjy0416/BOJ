@@ -4,7 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-public class Test_14501 {               // 문제 보류
+public class Test_14501 {               
     private static int size;
     private static int[] days, price;
     private static int max =0;
