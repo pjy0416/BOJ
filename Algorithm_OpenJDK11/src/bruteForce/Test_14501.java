@@ -4,7 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-public class Test_14501 {
+public class Test_14501 {               // 문제 보류
     private static int size =0;
     private static int[][] bf;
     private static int[] duration;
@@ -14,7 +14,7 @@ public class Test_14501 {
         for(int idx=1; idx<=size; idx++) {
 //            System.out.print(bf[idx][0] +", " + bf[idx][1] + " 에서 ~~~~~~~~~~>>>>>");
             if (idx != size && idx + duration[idx-1] <= size+1) {  // 마지막 Index 전까지의 로직
-                if (bf[idx][1] > bf[idx-1][0]) {
+                if (bf[idx][1]+price[idx-1] > bf[idx-1][0]) {
                     bf[idx][0] = bf[idx][1];
                     bf[idx][1] += price[idx - 1];
                 } else {
@@ -23,6 +23,7 @@ public class Test_14501 {
                         bf[idx][0] += price[idx-1];
                     } else {
                         bf[idx][1] = bf[idx-1][0] + price[idx - 1];
+                        bf[idx][0] = bf[idx-1][0];
                     }
                 }
 
