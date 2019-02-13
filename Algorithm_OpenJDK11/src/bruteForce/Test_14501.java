@@ -5,49 +5,22 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 public class Test_14501 {               // 문제 보류
-    private static int size =0;
-    private static int[][] bf;
-    private static int[] duration;
-    private static int[] price;
+    private static int size;
+    private static int[] days, price;
+    private static int max =0;
 
-    public static int getMax() {
-        for(int idx=1; idx<=size; idx++) {
-//            System.out.print(bf[idx][0] +", " + bf[idx][1] + " 에서 ~~~~~~~~~~>>>>>");
-            if (idx != size && idx + duration[idx-1] <= size+1) {  // 마지막 Index 전까지의 로직
-                if (bf[idx][1]+price[idx-1] > bf[idx-1][0]) {
-                    bf[idx][0] = bf[idx][1];
-                    bf[idx][1] += price[idx - 1];
-                } else {
-                    if(duration[idx-1] ==1) {   // 작업기간이 하루라면
-                        bf[idx][1] += price[idx-1];
-                        bf[idx][0] += price[idx-1];
-                    } else {
-                        bf[idx][1] = bf[idx-1][0] + price[idx - 1];
-                        bf[idx][0] = bf[idx-1][0];
-                    }
-                }
-
-                if (bf[idx + duration[idx - 1]][1] < price[idx - 1]) { // 작업기간 이후 번 돈 저장
-                    bf[idx + duration[idx - 1]][1] += bf[idx][1];
-                }
-                if (bf[idx + duration[idx - 1]][0] < price[idx - 1]) { // 작업기간 이후 번 돈 저장
-                    bf[idx + duration[idx - 1]][0] += bf[idx][0];
-                }
-            } else {    // 마지막 Index
-                if(duration[idx-1] ==1) {
-                    bf[idx][1] += price[idx-1];
-                    bf[idx][0] += price[idx-1];
-                }
-            }
-//            System.out.println(bf[idx][0] + ", " + bf[idx][1] + "로 변함");
+    public static void bf(int idx, int sum) {
+        max = Math.max(max, sum);
+        if(idx == size) {
+            return ;
         }
 
-        int max =0;
-        for(int i=1; i<=size; i++) {
-            max = Math.max(Math.max(bf[i][0], bf[i][1]), max);
+        if(idx+days[idx] <= size) {
+            bf(idx + days[idx], sum + price[idx]);
         }
+        bf(idx+1, sum);     // 안더하고 그냥 넘기기
 
-        return max;
+        return ;
     }
 
     public static void main(String[] args) throws IOException {
@@ -55,18 +28,17 @@ public class Test_14501 {               // 문제 보류
 
         size = Integer.parseInt(br.readLine());
 
-        duration = new int[size];
-        price = new int[size];
+        days = new int[size+1];
+        price = new int[size+1];
 
         for(int i=0; i<size; i++) {
             String str = br.readLine();
-            duration[i] = Integer.parseInt(str.split(" ")[0]);
+            days[i] = Integer.parseInt(str.split(" ")[0]);
             price[i] = Integer.parseInt(str.split(" ")[1]);
         }
 
-        bf = new int[size+2][size+2];
-
-        System.out.println(getMax());
+        bf(0,0);
+        System.out.println(max);
 
         br.close();
     }
