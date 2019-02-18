@@ -3,6 +3,8 @@ package dfs_bfs;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.LinkedList;
+import java.util.Queue;
 
 public class Test_1260 {
     public static void main(String[] args) throws IOException {
@@ -53,40 +55,31 @@ class Graph {
     }
 
     private void dfs(int start, boolean[] isVisited) {            // DFS 탐색
-        if(!isVisited[start]) {
-            System.out.print(start + " ");
-        }
-        isVisited[start] = true;
-        for(int i=1; i<=nodeNum; i++) {
-            if(adj[start][i] ==1) {
-                if(!isVisited[i]) {
-                    dfs(i,isVisited);
+        System.out.print(start + " ");
+        
+        isVisited[start] = true;                                  // 방문기록 작성
+        for(int i=1; i<=nodeNum; i++) {                           // loop 돌면서
+            if(adj[start][i] ==1) {                               // 현재 들어와있는 Node에 간선 연결된 곳이 있을 때
+                if(!isVisited[i]) {                               // 방문한 적이 없으면
+                    dfs(i,isVisited);                             // 들어가즈아~
                 }
             }
         }
     }
 
     private void bfs(int start, boolean[] isVisited) {                                           // BFS 탐색
-        int[] queue = new int[nodeNum+1];    // queue 생성
-        int size =0;                    // 전체 Size
-
-        System.out.print(start + " ");
+        Queue<Integer> q = new LinkedList<>();
+        q.add(start);
         isVisited[start] = true;
 
-        for(int i=1; i <=nodeNum; i++) {
-            if(adj[start][i] ==1) {
-                queue[size++] = i;
-                System.out.print(i + " ");
-                isVisited[i] = true;
-            }
-        }
-
-        for(int i=0; i<size; i++) {
-            for(int idx=1; idx<=nodeNum; idx++) {
-                if(adj[queue[i]][idx] ==1) {
-                    if(!isVisited[idx]) {
-                        System.out.print(idx + " ");
-                        isVisited[idx] = true;
+        while(!q.isEmpty()) {
+            int num = q.poll();
+            System.out.print(num + " ");
+            for(int i=1; i<=nodeNum; i++) {
+                if(adj[num][i] == 1) {
+                    if(!isVisited[i]) {
+                        q.add(i);
+                        isVisited[i] = true;
                     }
                 }
             }
