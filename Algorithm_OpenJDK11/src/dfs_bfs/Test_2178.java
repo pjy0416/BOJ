@@ -13,53 +13,53 @@ public class Test_2178 {
     private static int minRoot() {
         isVisited = initBool();
         int cnt =0;
-        int[] queueX = new int[100];
-        int[] queueY = new int[100];
-        int[] step = new int[100];
-        int[] wayX = {0, 1, -1, 0};       // 남 동 서 북
+        int[] queueX = new int[n*m];        // queue의 모든 좌표당 4개의 좌표가 들어갈 수 있다는 가정하에 최대가 40000이 됨
+        int[] queueY = new int[n*m];        // 따라서 n*m개의 갯수만큼 부여하는 것이 메모리가 좀더 효율적이라는 판단
+        int[] wayX = {0, 1, -1, 0};       // 남 동 서 북    Array로 값 저장
         int[] wayY = {1, 0, 0, -1};       // 남 동 서 북
 
-        int top=0, size =0; // queue 에 쓰일 변수 초기화
+        int first =0, size =0; // queue 에 쓰일 변수 초기화
 
-        queueX[size] =0;
+        queueX[size] =0;        // queue에 처음 좌표인 0,0을 넣어줌
         queueY[size] =0;
-        step[cnt] =1;
-        size++;
+        size++;                 // queue 사이즈 증가
+        isVisited[first][first] = true; // 시작지점이니까 방문 했던것으로 기록
 
         while(true) {
-            if(isVisited[n-1][m-1]) {
-                int sum=1;
-                for(int i=0; i<cnt; i++) {
-                    System.out.println(step[i]);
-                    sum+= step[i];
-                }
-                System.out.println(sum);
-                break;
+            if(isVisited[n-1][m-1]) {   // 마지막 좌표를 갔다면
+                cnt++;                  // 카운트 증가
+                return cnt;             // 리턴
             }
 
-            int nx = queueX[top];
-            int ny = queueY[top];
-            top++;
+            int addSize =0;             // 큐에 몇개가 들어갔는지 판단하기 위한 변수
+//            System.out.println(" ");
+//            System.out.println(first + " \t" + size);
+            for(int idx=first; idx<size; idx++) {   
+                int nx = queueX[idx];
+                int ny = queueY[idx];
+//                System.out.println(idx+"번 째 \t" + ny + "," + nx + "가 큐에 있음");
+                for (int i = 0; i < 4; i++) {
+                    int y = ny + wayY[i];
+                    int x = nx + wayX[i];
 
-            for(int i=0; i<4; i++) {
-                int y = ny + wayY[i];
-                int x = nx + wayX[i];
+//                    System.out.println(ny +"," +nx +" 꺼내서 씀\t" + y + "," +x + "로 변환");
 
-                if(y <=n-1 && y >=0 && x >= 0 && x <=m-1) {
-                    if(!isVisited[y][x] && map[y].charAt(x) =='1') {
-                        System.out.println(y + "," +x +"가자");
-                        queueX[i] = x;
-                        queueY[i] = y;
-                        size++;
-                        isVisited[y][x] = true;
-                        step[cnt] =1;
+                    if (y <= n - 1 && y >= 0 && x >= 0 && x <= m - 1) {             // out of index 방지
+                        if (!isVisited[y][x] && map[y].charAt(x) == '1') {          // 방문한 적이 없고 길이 있으면 go!
+//                            System.out.println(y + "," + x + "가자");
+                            queueX[size+addSize] = x;
+                            queueY[size+addSize] = y;
+                            addSize++;
+                            isVisited[y][x] = true;
+                        }
                     }
                 }
+                first++;
             }
+
+            size += addSize;
             cnt++;
         }
-
-        return cnt;
     }
 
     private static boolean[][] initBool() {
