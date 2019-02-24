@@ -8,7 +8,6 @@ public class Test_3184 {
     private static int[] directionX = {1, -1, 0, 0};             // 동 서 남 북
     private static int[] directionY = {0, 0, 1, -1};             // 동 서 남 북
     private static Boolean[][] isVisited;
-    private static Boolean[][] isWall;
     private static MyQueue wallPos;
     private static MyQueue wayPos;
 
@@ -49,68 +48,76 @@ public class Test_3184 {
             if(wayPos.getIdx() == wayPos.getSize()) {   // 울타리 안에서 모든거 돌았으면
                 // 울타리 위치 꺼내서 주변 탐색
                 if(wayPos.getSheep() > wayPos.getWolf()) {
-                    System.out.println("이게 언제되는데");
                     sheep += wayPos.getSheep();
                 } else {
                     wolf += wayPos.getWolf();
                 }
-                wayPos = new MyQueue();
-                System.out.println("초기화");
-                search(wallPos, size, depth, ways);
+                wayPos.init();
+//                System.out.println("길 초기화");
+                search(wallPos,size, depth, ways);
+            } else {
+                /*System.out.println("벽 초기화");
+                wallPos = new MyQueue();*/
+                waySearch(size, depth, ways);
             }
-            search(wayPos, size, depth, ways);
+
+
+
 
 
 
         }
-        System.out.println("\n\n" + sheep + " " + wolf);
+        System.out.println(sheep + " " + wolf);
     }
 
-    private static void search(MyQueue pos, int size, int depth, String[] ways) {
-//        System.out.println("자자\t늑대는?" + pos.getWolf() + "양은?\t\t" + pos.getSheep());
-        for(int idx=pos.getIdx(); idx<pos.getSize(); idx++) {
-            int posX = pos.getX();
-            int posY = pos.getY();
-            System.out.println(posX + "," + posY);
-            for(int i=0; i<4; i++) {
-                int x = posX + directionX[i];             // 다음 좌표
-                int y = posY + directionY[i];             // 다음 좌표
+    private static void waySearch(int size, int depth, String[] ways) {
+        for(int idx=wayPos.getIdx(); idx<wayPos.getSize(); idx++) {
+            search(wayPos, size, depth, ways);
+        }
+    }
 
-                if(x >=0 && x<depth && y>=0 && y<size) {        // out of index 방지
-                    if(!isVisited[y][x]) {                      // 들린적이 없을 때만
-                        char ch = ways[y].charAt(x);
-//                        System.out.println(x+ "," + y + "가즈아");
-                        switch (ch) {
-                            case '#':
-                                System.out.println(x + "," + y + "여긴 벽");
-                                wallPos.add(x,y);
-                                isVisited[y][x] = true;
-                                break;
-                            case '.':
-                                wayPos.add(x,y);
-                                isVisited[y][x] = true;
-                                break;
-                            case 'v' :
-                                wayPos.add(x,y);
-                                wayPos.addWolf();
-                                System.out.println("여기는 늑대");
-                                isVisited[y][x] = true;
-                                break;
-                            case 'o' :
-                                wayPos.add(x,y);
-                                wayPos.addSheep();
-                                System.out.println("여기는 양");
-                                isVisited[y][x] = true;
-                                break;
-                            default:
-                                break;
-                        }
+
+    private static void search(MyQueue pos, int size, int depth, String[] ways) {
+        int posX = pos.getX();
+        int posY = pos.getY();
+        if(ways[posY].charAt(posX) != '#') {
+//            System.out.println(posX + "," + posY + " 시작");
+        }
+        for(int i=0; i<4; i++) {
+            int x = posX + directionX[i];             // 다음 좌표
+            int y = posY + directionY[i];             // 다음 좌표
+
+            if(x >=0 && x<depth && y>=0 && y<size) {        // out of index 방지
+                if(!isVisited[y][x]) {                      // 들린적이 없을 때만
+                    char ch = ways[y].charAt(x);
+//                    System.out.print("\t" + x+ "," + y);
+                    switch (ch) {
+                        case '#':
+//                            System.out.println("여긴 벽");
+                            wallPos.add(x,y);
+                            break;
+                        case '.':
+                            wayPos.add(x,y);
+//                            System.out.println("여기는 길");
+                            break;
+                        case 'v' :
+                            wayPos.add(x,y);
+                            wayPos.addWolf();
+//                            System.out.println("여기는 늑대");
+                            break;
+                        case 'o' :
+                            wayPos.add(x,y);
+                            wayPos.addSheep();
+//                            System.out.println("여기는 양");
+                            break;
+                        default:
+                            break;
                     }
+                    isVisited[y][x] = true;
                 }
             }
         }
     }
-
     private static Boolean[][] initBool(int size, int depth) {
         Boolean[][] result= new Boolean[size][depth];
 
@@ -133,8 +140,8 @@ class MyQueue {
     private int sheep;
 
     MyQueue() {
-        x = new int[100];
-        y = new int[100];
+        x = new int[1000];
+        y = new int[1000];
         size =0;
         first =0;
         wolf =0;
@@ -181,6 +188,13 @@ class MyQueue {
 
     int getSheep() {
         return this.sheep;
+    }
+
+    void init() {
+        first =0;
+        size =0;
+        wolf =0;
+        sheep =0;
     }
 
 }
