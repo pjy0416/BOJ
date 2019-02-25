@@ -12,83 +12,95 @@ public class Test_7576 {
     private static int[] wayX = {-1, 1, 0, 0};                         // 좌 우
     private static int[] wayY = {0, 0, -1, 1};                         // 상 하
 
-    private static LightQueue movePos;
+    private static LightQueue[] movePos;
     private static int step,cnt;
 
 
     private static void bfs(LightQueue ripeTmt) {
-        step =-1;                    // 확산 스텝 counting 변수
-        cnt =0;                     // 변하는 갯수 counting 변수
+        step =0;                    // 확산 스텝 counting 변수
+        cnt =0;                      // 변하는 갯수 counting 변수
 
-        if(ripeTmt.getSize() == blank) {        // 상자에 이미 익은게 다 있으면 할 필요 없어
-            System.out.println("0");
+        if((ripeTmt.getSize() == blank && ripeTmt.getSize() !=0) || ripeTmt.getSize() == maxX*maxY) {        // 상자에 이미 익은게 다 있으면 할 필요 없어
+            printResult(step, cnt, ripeTmt.getSize());
             return;
         }
 
-        movePos = new LightQueue();
-        isVisited = initBool();
-        int[] ripePos = ripeTmt.pop();
+        if(ripeTmt.getSize() ==0) { // 익은게 아예 없으면
+            printResult(0, 1,0);
+            return;
+        }
 
-        movePos.push(ripePos[0], ripePos[1]);
-        isVisited[ripePos[1]][ripePos[0]] = true;
+        int size = ripeTmt.getSize();
+        movePos = new LightQueue[size];
+        isVisited = initBool();
+
+        for(int i=0; i<size; i++) {
+            movePos[i] = new LightQueue();
+            int[] pos = ripeTmt.pop();
+            movePos[i].push(pos[0],pos[1]);
+            isVisited[pos[1]][pos[0]] = true;
+        }
 
         while(true) {
-            int[] pos = new int[2];
-            if(movePos.getSize() ==0) {         // 저장되있는 토마토를 다 탐색하면
-                if(ripeTmt.getSize() !=0) {     // 다른 파티션 되어있는 공간에 익은 토마토가 있을 수 있으니깐
-                    pos = ripeTmt.pop();
-                    search(pos[0], pos[1]);
-                } else {                        // 익은것도 다 썼으면
-                    break;
-                }
-            } else {                            // 안익은 토마토 좌표 가져오기
-                int size = movePos.getSize();
+            if(movePos[0].getSize() ==0) {
+                break;
+            }
+            boolean isDone = false;
 
-                for(int i=0; i<size; i++) {
-                    pos = movePos.pop();
-                    search(pos[0],pos[1]);
+            if( size ==1) {
+                int posSize = movePos[0].getSize();
+                for(int i =0; i<posSize; i++) {
+                    search(0, movePos[0].pop());
+                }
+                step++;
+
+            } else {
+                for (int i = 0; i < size; i++) {
+                    isDone = search(i, movePos[i].pop());
+                }
+                if (isDone) {
+                    step++;
+//                    System.out.println("Step ++ !!!!!!!!!!!!!!!!\t" + step);
                 }
             }
-            step++;
         }
-        printResult(step, cnt);
+
+        printResult(step, cnt, size);
     }
 
-    private static void search(int posX, int posY) {
-//        System.out.println("\t" + posX + "," + posY + "에서 시작");
+    private static boolean search(int idx,int[] pos) {
+//        System.out.println("\t" + pos[0] + "," + pos[1] + "에서 시작");
+        boolean isDone =false;
 
-        for(int direction=0; direction<4; direction++) {
-            int x = posX + wayX[direction];
-            int y = posY + wayY[direction];
+        for(int direction=0; direction<4; direction++) {                // 4방향 검색
+            int x = pos[0] + wayX[direction];
+            int y = pos[1] + wayY[direction];
 
-            if( (x>=0 && x<maxX) && (y>=0 && y<maxY) ) {                // out of index 방지
+            if( x>=0 && x<maxX && y>=0 && y<maxY ) {                // out of index 방지
                 if(!map[y][x].equals("-1") && !isVisited[y][x]) {       // 비어있는 공간이 아니면
-                    if(map[y][x].equals("1")) {                         // 익어있는 토마토가 있을 때는
-                        step = roundDiv(step);
-                    } else {                                            // 안익어있는게 있으면
-//                        System.out.println(x + "," + y + "로 이동");
-                        movePos.push(x,y);
-                    }
+//                    System.out.println(x + "," + y + "로 이동");
+                    movePos[idx].push(x,y);
                     cnt++;
+                    isDone = true;
                 }
                 isVisited[y][x] = true;
             }
         }
+        return isDone;
     }
 
-    private static int roundDiv(int target) {
-        if(target % 2 == 1) {
-            return target/2 +1;
-        }
-        return target/2;
-    }
-
-    private static void printResult(int step, int cnt) {
+    private static void printResult(int step, int cnt, int ripeSize) {
         // 작업 후 변한 갯수가 토마토의 갯수와 같은지 아닌지 판단
-        if(maxX*maxY-blank != cnt+1) {              // 자기 자신을 포함해야하기 때문에 count에 +1
-            System.out.println("-1");               // 모두 익지 않을 경우는 -1 return
+        if(cnt ==0) {
+            System.out.println("0");
+        } else if(maxX*maxY == cnt +blank +ripeSize) {      // 전체 박스와 (익게 만든 것 + 빈 공간 + 익어 있던 것 갯수) 가 같으면
+            if(ripeSize ==1) {
+                System.out.println(step-1);
+            } else {
+                System.out.println(step);                       // 몇 번에 걸쳐서 익게했는지 print
+            }
         } else {
-            System.out.println(step);               // 모두 익었을 시는 step return
+            System.out.println("-1");                       // 다르면 -1 print
         }
     }
 
@@ -115,7 +127,7 @@ public class Test_7576 {
         map = new String[maxY][maxX];
 
         for(int y=0; y<maxY; y++) {             // 여기서 초반의 맵에서 1인 부분을 모두 queue 에 집어 넣고 동시 다발적으로
-                                                // 탐색을 시작하는 코드가 중요!
+            // 탐색을 시작하는 코드가 중요!
             String[] strArr = br.readLine().split(" ");
             for(int x=0; x<maxX; x++) {
                 String info = strArr[x];
@@ -167,6 +179,14 @@ class LightQueue {
         result[0] = posX[front];
         result[1] = posY[front];
         front++;
+
+        return result;
+    }
+
+    int[] peek() {
+        int[] result = new int[2];
+        result[0] =posX[front];
+        result[1] = posY[front];
 
         return result;
     }
