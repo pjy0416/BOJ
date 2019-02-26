@@ -20,21 +20,16 @@ public class Test_7576 {
         step =0;                    // 확산 스텝 counting 변수
         cnt =0;                      // 변하는 갯수 counting 변수
 
-        if((ripeTmt.getSize() == blank && ripeTmt.getSize() !=0) || ripeTmt.getSize() == maxX*maxY) {        // 상자에 이미 익은게 다 있으면 할 필요 없어
-            printResult(step, cnt, ripeTmt.getSize());
+        /*if(ripeTmt.getSize() ==0) { // 익은게 아예 없으면
+            System.out.println("-1");
             return;
-        }
-
-        if(ripeTmt.getSize() ==0) { // 익은게 아예 없으면
-            printResult(0, 1,0);
-            return;
-        }
+        }*/
 
         int size = ripeTmt.getSize();
-        movePos = new LightQueue[size];
+        movePos = new LightQueue[size];             // 익은 갯수 만큼 Queue 생성
         isVisited = initBool();
 
-        for(int i=0; i<size; i++) {
+        for(int i=0; i<size; i++) {                 // 각각의 익은 좌표에서 탐색을 위해 좌표를 넣어줌
             movePos[i] = new LightQueue();
             int[] pos = ripeTmt.pop();
             movePos[i].push(pos[0],pos[1]);
@@ -42,26 +37,21 @@ public class Test_7576 {
         }
 
         while(true) {
-            if(movePos[0].getSize() ==0) {
-                break;
-            }
             boolean isDone = false;
 
-            if( size ==1) {
-                int posSize = movePos[0].getSize();
-                for(int i =0; i<posSize; i++) {
-                    search(0, movePos[0].pop());
+            for (int i = 0; i < size; i++) {            // queue 갯수만큼 search 실행
+                int posSize = movePos[i].getSize();     // 각각 queue 에 있는 좌표들 size를 받아줌
+                for(int j=0; j<posSize; j++) {          // 그 좌표 만큼
+                    if(search(i, movePos[i].pop())) {   // 탐색
+                        isDone = true;                  // 다음 좌표가 있다면 true
+                    }
                 }
-                step++;
+            }
 
-            } else {
-                for (int i = 0; i < size; i++) {
-                    isDone = search(i, movePos[i].pop());
-                }
-                if (isDone) {
-                    step++;
-//                    System.out.println("Step ++ !!!!!!!!!!!!!!!!\t" + step);
-                }
+            if (isDone) {       // 주변을 익게했다면 step 증가
+                step++;
+            } else {            // 익게한 좌표가 없으면 종료
+                break;
             }
         }
 
@@ -69,7 +59,6 @@ public class Test_7576 {
     }
 
     private static boolean search(int idx,int[] pos) {
-//        System.out.println("\t" + pos[0] + "," + pos[1] + "에서 시작");
         boolean isDone =false;
 
         for(int direction=0; direction<4; direction++) {                // 4방향 검색
@@ -77,11 +66,11 @@ public class Test_7576 {
             int y = pos[1] + wayY[direction];
 
             if( x>=0 && x<maxX && y>=0 && y<maxY ) {                // out of index 방지
-                if(!map[y][x].equals("-1") && !isVisited[y][x]) {       // 비어있는 공간이 아니면
-//                    System.out.println(x + "," + y + "로 이동");
+                if(map[y][x].equals("0") && !isVisited[y][x]) {       // 비어있는 공간이 아니면
                     movePos[idx].push(x,y);
                     cnt++;
                     isDone = true;
+                    map[y][x] = String.valueOf(Integer.parseInt(map[pos[1]][pos[0]])+1);    // 인터넷보고 추가한 코드
                 }
                 isVisited[y][x] = true;
             }
@@ -91,16 +80,27 @@ public class Test_7576 {
 
     private static void printResult(int step, int cnt, int ripeSize) {
         // 작업 후 변한 갯수가 토마토의 갯수와 같은지 아닌지 판단
-        if(cnt ==0) {
+        if(cnt ==0) {                                       // 한번도 익게 안했을 때
             System.out.println("0");
-        } else if(maxX*maxY == cnt +blank +ripeSize) {      // 전체 박스와 (익게 만든 것 + 빈 공간 + 익어 있던 것 갯수) 가 같으면
-            if(ripeSize ==1) {
-                System.out.println(step-1);
-            } else {
-                System.out.println(step);                       // 몇 번에 걸쳐서 익게했는지 print
+        } else if(maxX*maxY == cnt + blank + ripeSize) {      // 전체 박스와 (익게 만든 것 + 빈 공간 + 익어 있던 것 갯수) 가 같으면
+//            System.out.println(step);                       // 몇 번에 걸쳐서 익게했는지 print
+
+            // 인터넷보고 추가한 코드 시작
+            int max =1;
+            for(int y=0; y<maxY; y++) {
+                for(int x=0; x<maxX; x++) {
+                    if(map[y][x].equals("0")) {
+                        System.out.println(-1);
+                        return;
+                    }
+                    max = Math.max(max, Integer.parseInt(map[y][x]));
+                }
             }
+            System.out.println(max-1);
+            //끝
+
         } else {
-            System.out.println("-1");                       // 다르면 -1 print
+            System.out.println("-1");                       // 다르면 -1 print (모든 상자가 익게될 수 없을 경우)
         }
     }
 
