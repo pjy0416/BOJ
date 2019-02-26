@@ -97,7 +97,7 @@ public class Test_7576 {
                 }
             }
             System.out.println(max-1);
-            //끝
+            //끝 나중에 지울것
 
         } else {
             System.out.println("-1");                       // 다르면 -1 print (모든 상자가 익게될 수 없을 경우)
