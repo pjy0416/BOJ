@@ -3,6 +3,8 @@ package dfs_bfs;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.LinkedList;
+import java.util.Queue;
 
 public class Test_7576 {
     private static int[][] map;                          // 토마토 상자 정보
@@ -11,13 +13,15 @@ public class Test_7576 {
     private static int[] wayX = {-1, 1, 0, 0};           // 좌 우
     private static int[] wayY = {0, 0, -1, 1};           // 상 하
     private static int unripe =0, cnt =0;                // 안익은 갯수와, 익게 만든 횟수
-    private static LightQueue movePos;                   // 간단 queue
+//    private static LightQueue movePos;                   // 간단 queue
+    private static Queue<Dot> movePos;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br=  new BufferedReader(new InputStreamReader(System.in));
 
         String str = br.readLine();
-        LightQueue queue = new LightQueue();
+//        LightQueue queue = new LightQueue();
+        Queue<Dot> queue = new LinkedList<>();
 
         maxX = Integer.parseInt(str.split(" ")[0]);
         maxY = Integer.parseInt(str.split(" ")[1]);
@@ -43,8 +47,9 @@ public class Test_7576 {
         br.close();
     }
 
-    private static void bfs(LightQueue ripeTmt) {
-        movePos = new LightQueue();
+    private static void bfs(Queue<Dot> ripeTmt) {
+//        movePos = new LightQueue();
+        movePos = new LinkedList<>();
         isVisited = new boolean[maxY][maxX];
 
         while(!ripeTmt.isEmpty()) {
