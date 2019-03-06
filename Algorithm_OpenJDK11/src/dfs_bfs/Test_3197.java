@@ -1,8 +1,16 @@
 /**              3197번 백조의 호수 (Swan Lake)
-*                호수의 크기 : 가로 R * 세로 C
-*                백조 두 마리, 만나는 길이 물이어야함 (빙판 X)
-*                얼어있는 구간이 있는데 물과 인접해 있으면 하루만에 녹음
-*                . : 물공간,   X : 빙판 공간, L : 백조가 있는 공간
+ *                호수의 크기 : 가로 R * 세로 C
+ *                백조 두 마리, 만나는 길이 물이어야함 (빙판 X)
+ *                얼어있는 구간이 있는데 물과 인접해 있으면 하루만에 녹음
+ *                . : 물공간,   X : 빙판 공간, L : 백조가 있는 공간
+ */
+
+/* Hint
+*  1. 하루동안 물 근처 빙하 녹이고 다음날로 진입
+*  2. 백조 만날수 있는지 검증
+*  1과 2 반복하며 만나면 끝내는
+*  코드가 많더라...
+*  근데 그럼 너무 오래걸리지 않을까
 */
 package dfs_bfs;
 
@@ -13,161 +21,29 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 public class Test_3197 {
-    private static boolean[][] isVisitedL;
-    private static boolean[][] isVisitedR;
+    private static Queue<Dot_3197> leftQ, rightQ;
+    private static boolean[][] visitL, visitR;
+    private static Dot_3197 swanL, swanR;
     private static String[][] map;
-    private static Dot_3197[] swans;
-    private static Queue<Dot_3197> queueL;
-    private static Queue<Dot_3197> queueR;
-    private static int step;
-    private static int maxX;
-    private static int maxY;
-    private static int[] wayX = {1,-1,0,0,0};     // 4방향 증감 저장  + 자기 자신
-    private static int[] wayY = {0,0,1,-1,0};
-
-    private static void bfs(int maxX, int maxY) {
-        isVisitedL = new boolean[maxX][maxY];
-        isVisitedR = new boolean[maxX][maxY];
-        queueL = new LinkedList<>();
-        queueR = new LinkedList<>();
-
-        findPos();
-
-        boolean isEnd = false;
-
-        while(true) {
-
-            if(!queueL.isEmpty()) {
-                Dot_3197 posL = queueL.poll();
-                isEnd = findWays(posL, maxX, maxY, "left");
-            }
-            if(!queueR.isEmpty()) {
-                Dot_3197 posR = queueR.poll();
-                isEnd = findWays(posR, maxX, maxY, "right");
-            }
-
-            if(isEnd) {
-                break;
-            }
-
-        }
-        System.out.println(step);
-    }
-
-    private static void findPos() {         // 4가지 경우
-        Dot_3197 pos1 = swans[0];
-        Dot_3197 pos2 = swans[1];
-
-        Dot_3197 casePosL = selectCase(pos1, pos2, 1);
-        Dot_3197 casePosR = selectCase(casePosL, pos2, 0);
-
-        queueL.offer(casePosL);
-        queueR.offer(casePosR);
-
-        isVisitedL[casePosL.x][casePosL.y] = true;
-        isVisitedR[casePosR.x][casePosR.y] = true;
-    }
-
-    private static Dot_3197 selectCase(Dot_3197 pos1, Dot_3197 pos2, int stand) {
-        Dot_3197 closePos = new Dot_3197(1501, 1501, 1501);
-
-        if(pos1.x >= pos2.x && pos1.y >= pos2.y) {        // 첫 번째 경우, pos1 이 pos2보다 우하 위치
-            closePos = findPoint(pos2.x, pos1.x, pos2.y, pos1.y, stand);
-        } else if(pos1.x >= pos2.x && pos1.y <= pos2.y) {        // 두 번째 경우, pos1 이 pos2보다 좌하 위치
-            closePos = findPoint(pos2.x, pos1.x, pos1.y, pos2.y, stand);
-        } else if(pos1.x <= pos2.x && pos1.y >= pos2.y) {        // 세 번째 경우, pos1 이 pos2보다 우상 위치
-            closePos = findPoint(pos1.x, pos2.x, pos2.y, pos1.y,stand );
-        } else if(pos1.x <= pos2.x && pos1.y <= pos2.y) {        // 네 번째 경우, pos1 이 pos2보다 좌상 위치
-            closePos = findPoint(pos1.x, pos2.x, pos1.y, pos2.y,stand );
-        }
-
-        closePos.step =0;
-
-        return closePos;
-    }
-
-    private static Dot_3197 findPoint(int pos2_X, int pos1_X, int pos2_Y, int pos1_Y, int stand) {
-        Dot_3197 result = new Dot_3197(1501, 1501, 1501);
-        for(int x = pos2_X; x<= pos1_X; x++) {
-            for(int y=pos2_Y; y<= pos1_Y; y++) {
-                for(int i=0; i<5; i++) {        // 4방향
-                    int posX = x + wayX[i];
-                    int posY = y + wayY[i];
-
-                    if(posX >=0 && posX < maxX && posY >=0 && posY < maxY) {
-                        if(map[posX][posY].equals(".")) {
-                            int dist = pos1_X - posX + pos1_Y - posY;
-                            if (result.step > dist && dist > stand) {
-                                result.x = posX;
-                                result.y = posY;
-                                result.step = dist;
-                            }
-                        }
-                    }
-                }
-
-            }
-        }
-
-        return result;
-    }
-
-    private static boolean findWays(Dot_3197 dot, int maxX, int maxY, String key) {
-        boolean[][] isVisited;
-        Queue<Dot_3197> queue;
-        if(key.equals("left")) {
-            isVisited = isVisitedL.clone();
-            queue = queueL;
-        } else {
-            isVisited = isVisitedR.clone();
-            queue = queueR;
-        }
-        for(int i=0; i<4; i++) {
-            int posX = dot.x + wayX[i];
-            int posY = dot.y + wayY[i];
-
-            if(posX >=0 && posX<maxX && posY<maxY && posY>=0) {             // out of index 방지
-                if(!isVisited[posX][posY]) {
-                    if(map[posX][posY].equals(".")) {                   // 물길일 때
-                        Dot_3197 tmp = new Dot_3197(posX, posY, dot.step);
-                        queue.offer(tmp);
-                    } else if(map[posX][posY].equals("X")) {            // 빙판일 때
-                        Dot_3197 tmp = new Dot_3197(posX, posY, dot.step+1);
-                        map[posX][posY] = ".";
-                        queue.offer(tmp);
-                    }
-                }
-
-                if(key.equals("left")) {
-                    if(isVisitedR[posX][posY]) {
-                        step = dot.step;
-                        return true;
-                    }
-                } else {
-                    if(isVisitedL[posX][posY]) {
-                        step = dot.step;
-                        return true;
-                    }
-                }
-
-                isVisited[posX][posY] = true;
-            }
-        }
-        return false;
-    }
+    private static int[][] mapStep;
+    private static int[] wayX = {1, -1, 0, 0};
+    private static int[] wayY = {0, 0, 1, -1};
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-        swans = new Dot_3197[2];                 // swans position
-        int swanIdx =0;
+        leftQ = new LinkedList<>();
+        rightQ = new LinkedList<>();
 
         String lakeInfo = br.readLine();
 
-        maxX = Integer.parseInt(lakeInfo.split(" ")[0]);
-        maxY = Integer.parseInt(lakeInfo.split(" ")[1]);
+        int maxX = Integer.parseInt(lakeInfo.split(" ")[0]);
+        int maxY = Integer.parseInt(lakeInfo.split(" ")[1]);
         map = new String[maxX][maxY];
-
+        mapStep = new int[maxX][maxY];
+        visitL = new boolean[maxX][maxY];
+        visitR = new boolean[maxX][maxY];
+//        isVisited = new boolean[maxX][maxY];
 
         for(int x=0; x<maxX; x++) {
             String st = br.readLine();
@@ -175,7 +51,11 @@ public class Test_3197 {
             for(int y=0; y<maxY; y++) {
                 map[x][y] = stArr[y];
                 if(stArr[y].equals("L")) {
-                    swans[swanIdx++] = new Dot_3197(x, y, 0);
+                    if(leftQ.isEmpty()) {
+                        leftQ.offer(new Dot_3197(x,y, 0));
+                    } else {
+                        rightQ.offer(new Dot_3197(x,y,0));
+                    }
                 }
             }
         }
@@ -184,6 +64,111 @@ public class Test_3197 {
 
         br.close();
     }
+
+    private static void bfs(int maxX, int maxY) {
+        swanL = leftQ.poll();
+        swanR = rightQ.poll();
+        startSwan(maxX, maxY, swanL, swanR);
+        setMaxStep(maxX, maxY);
+        while(!leftQ.isEmpty() || !rightQ.isEmpty()) {       // 각각 swan~에서 한번씩 search 합시다
+            if(!leftQ.isEmpty()) {
+                searchPath(maxX, maxY, leftQ.poll(), 0);
+            }
+            if(!rightQ.isEmpty()) {
+                searchPath(maxX, maxY, rightQ.poll(), 1);
+            }
+        }
+
+        System.out.println(mapStep[swanL.x][swanL.y] + "\t\t" + mapStep[swanR.x][swanR.y]);
+    }
+
+    private static void searchPath(int maxX, int maxY, Dot_3197 dot, int direction) {
+        for(int i=0; i<4; i++) {
+            int posX = dot.x + wayX[i];
+            int posY = dot.y + wayY[i];
+
+            if (posX >= 0 && posX < maxX && posY >= 0 && posY < maxY) {
+                int step = dot.step;
+                String sign = map[posX][posY];
+
+                if(sign.equals("X")) {   // 빙판이면 step 플러스
+                    step += 1;
+                    map[posX][posY] = ".";  // 물길로 만들기
+                }
+
+                if (direction == 0 ) { // 좌측 큐에서 빼온거면
+                    if (!visitL[posX][posY]){                // 들른적 없어?
+                        leftQ.offer(new Dot_3197(posX, posY, step));    // 그럼 큐에 넣어~
+                    }
+
+                    if(posX == swanR.x && posY == swanR.y) {    // 좌측 백조에서 우측 백조까지 갔어
+                        mapStep[posX][posY] = step;             // 지금 스텝 넣어주고 끝내
+                        return;
+                    }
+
+                    if(visitR[posX][posY]) {   // 반대에서 들른 적 있는 곳이야?
+                        mapStep[posX][posY] = Math.min(mapStep[posX][posY], step);  // 더 작은 step 넣어
+                    }
+
+
+                    visitL[posX][posY] = true;
+
+                } else if(direction == 1){         // 우측 큐에서 빼온거면
+                    if(!visitR[posX][posY]) {       // 들른적 없으면 넣어
+                        rightQ.offer(new Dot_3197(posX, posY, step));
+                    }
+
+                    if(posX == swanL.x && posY == swanL.y) {    // 좌측 백조에서 우측 백조까지 갔어
+                        mapStep[posX][posY] = step;             // 지금 스텝 넣어주고 끝내
+                        return;
+                    }
+
+                    if(visitL[posX][posY]) {   // 반대에서 들른 적 있는 곳이야?
+                        mapStep[posX][posY] = Math.min(mapStep[posX][posY], step);  // 더 작은 step 넣어
+                    }
+
+                    visitR[posX][posY] = true;
+                }
+
+            }
+        }
+    }
+
+    private static void setMaxStep(int maxX, int maxY) {
+        for(int x=0; x<maxX; x++) {
+            for(int y=0; y<maxY; y++) {
+                mapStep[x][y] = 1500;
+            }
+        }
+    }
+
+    private static void startSwan(int maxX, int maxY, Dot_3197 swanL, Dot_3197 swanR) {
+        visitL[swanL.x][swanL.y] = true;
+        visitR[swanR.x][swanR.y] = true;
+
+        for(int i=0; i<4; i++) {
+            int lx = swanL.x + wayX[i];
+            int ly = swanL.y + wayY[i];
+            int rx = swanR.x + wayX[i];
+            int ry = swanR.y + wayY[i];
+
+            if(lx >=0 && lx <maxX && ly >=0 && ly <maxY) {
+                String sign = map[lx][ly];
+                if(sign.equals(".")) {      // 처음에 물이어야만 스텝에 맞게 탐색 가능
+                    leftQ.offer(new Dot_3197(lx, ly, 0));
+                    visitL[lx][ly] = true;
+                }
+            }
+            if(rx >=0 && rx <maxX && ry >=0 && ry <maxY) {
+                String sign = map[lx][ly];
+                if(sign.equals(".")) {      // 처음에 물이어야만 스텝에 맞게 탐색 가능
+                    visitR[rx][ry] = true;
+                    rightQ.offer(new Dot_3197(rx, ry, 0));
+                }
+            }
+        }
+    }
+
 }
 
 class Dot_3197 {
@@ -197,3 +182,15 @@ class Dot_3197 {
         this.step = step;
     }
 }
+
+/*
+8 17
+...XXXXXX..XX.XXX
+....XXXXXXXXX.XXX
+...XXXXXXXXXXXX..
+..XXXXX.LXXXXXX..
+.XXXXXX..XXXXXX..
+XXXXXXX...XXXX...
+..XXXXX...XXX....
+....XXXXX.XXXL...
+*/
