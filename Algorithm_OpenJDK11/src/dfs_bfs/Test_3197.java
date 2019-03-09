@@ -21,40 +21,37 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 public class Test_3197 {
-    private static Queue<Dot_3197> leftQ, rightQ;
-    private static boolean[][] visitL, visitR;
+    private static boolean[][] isVisited;
     private static Dot_3197 swanL, swanR;
+    private static Queue<Dot_3197> wayStack;
+    private static Queue<Dot_3197> queue;
     private static String[][] map;
-    private static int[][] mapStep;
     private static int[] wayX = {1, -1, 0, 0};
     private static int[] wayY = {0, 0, 1, -1};
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-        leftQ = new LinkedList<>();
-        rightQ = new LinkedList<>();
+        queue = new LinkedList<>();
 
         String lakeInfo = br.readLine();
 
         int maxX = Integer.parseInt(lakeInfo.split(" ")[0]);
         int maxY = Integer.parseInt(lakeInfo.split(" ")[1]);
         map = new String[maxX][maxY];
-        mapStep = new int[maxX][maxY];
-        visitL = new boolean[maxX][maxY];
-        visitR = new boolean[maxX][maxY];
-//        isVisited = new boolean[maxX][maxY];
 
+        boolean isAdd = false;
         for(int x=0; x<maxX; x++) {
             String st = br.readLine();
             String[] stArr = st.split("");
             for(int y=0; y<maxY; y++) {
                 map[x][y] = stArr[y];
                 if(stArr[y].equals("L")) {
-                    if(leftQ.isEmpty()) {
-                        leftQ.offer(new Dot_3197(x,y, 0));
+                    if(!isAdd) {
+                        swanL = new Dot_3197(x, y, 0);
+                        isAdd = true;
                     } else {
-                        rightQ.offer(new Dot_3197(x,y,0));
+                        swanR = new Dot_3197(x,y,0);
                     }
                 }
             }
@@ -66,107 +63,75 @@ public class Test_3197 {
     }
 
     private static void bfs(int maxX, int maxY) {
-        swanL = leftQ.poll();
-        swanR = rightQ.poll();
-        startSwan(maxX, maxY, swanL, swanR);
-        setMaxStep(maxX, maxY);
-        while(!leftQ.isEmpty() || !rightQ.isEmpty()) {       // 각각 swan~에서 한번씩 search 합시다
-            if(!leftQ.isEmpty()) {
-                searchPath(maxX, maxY, leftQ.poll(), 0);
-            }
-            if(!rightQ.isEmpty()) {
-                searchPath(maxX, maxY, rightQ.poll(), 1);
-            }
-        }
+        int step =0;
 
-        System.out.println(mapStep[swanL.x][swanL.y] + "\t\t" + mapStep[swanR.x][swanR.y]);
+        boolean canMeet = meetEach(maxX, maxY);
+        while(!canMeet) {
+            step++;
+            meltICE(maxX, maxY);
+            canMeet = meetEach(maxX, maxY);
+        }
+        System.out.println(step);
     }
 
-    private static void searchPath(int maxX, int maxY, Dot_3197 dot, int direction) {
-        for(int i=0; i<4; i++) {
-            int posX = dot.x + wayX[i];
-            int posY = dot.y + wayY[i];
+    private static void meltICE(int maxX, int maxY) {
+        isVisited = new boolean[maxX][maxY];
 
-            if (posX >= 0 && posX < maxX && posY >= 0 && posY < maxY) {
-                int step = dot.step;
-                String sign = map[posX][posY];
-
-                if(sign.equals("X")) {   // 빙판이면 step 플러스
-                    step += 1;
-                    map[posX][posY] = ".";  // 물길로 만들기
-                }
-
-                if (direction == 0 ) { // 좌측 큐에서 빼온거면
-                    if (!visitL[posX][posY]){                // 들른적 없어?
-                        leftQ.offer(new Dot_3197(posX, posY, step));    // 그럼 큐에 넣어~
-                    }
-
-                    if(posX == swanR.x && posY == swanR.y) {    // 좌측 백조에서 우측 백조까지 갔어
-                        mapStep[posX][posY] = step;             // 지금 스텝 넣어주고 끝내
-                        return;
-                    }
-
-                    if(visitR[posX][posY]) {   // 반대에서 들른 적 있는 곳이야?
-                        mapStep[posX][posY] = Math.min(mapStep[posX][posY], step);  // 더 작은 step 넣어
-                    }
-
-
-                    visitL[posX][posY] = true;
-
-                } else if(direction == 1){         // 우측 큐에서 빼온거면
-                    if(!visitR[posX][posY]) {       // 들른적 없으면 넣어
-                        rightQ.offer(new Dot_3197(posX, posY, step));
-                    }
-
-                    if(posX == swanL.x && posY == swanL.y) {    // 좌측 백조에서 우측 백조까지 갔어
-                        mapStep[posX][posY] = step;             // 지금 스텝 넣어주고 끝내
-                        return;
-                    }
-
-                    if(visitL[posX][posY]) {   // 반대에서 들른 적 있는 곳이야?
-                        mapStep[posX][posY] = Math.min(mapStep[posX][posY], step);  // 더 작은 step 넣어
-                    }
-
-                    visitR[posX][posY] = true;
-                }
-
-            }
-        }
-    }
-
-    private static void setMaxStep(int maxX, int maxY) {
         for(int x=0; x<maxX; x++) {
             for(int y=0; y<maxY; y++) {
-                mapStep[x][y] = 1500;
+                String sign = map[x][y];
+
+                for(int i=0; i<4; i++) {
+                    int posX = x+ wayX[i];
+                    int posY = y+ wayY[i];
+
+                    if(posX >=0 && posX <maxX && posY >=0 && posY <maxY) {
+                        if(!isVisited[x][y] && sign.equals(".") ) { // 해당 위치에 들린적 없고, 물이면
+                            String around = map[posX][posY];        // 주변 좌표
+
+                            if(around.equals("X")) {                // 주변이 얼음이면
+                                map[posX][posY] = ".";              // 녹여
+//                                System.out.println(posX + "," + posY + "녹였어");
+                            }
+                            isVisited[posX][posY] = true;           // 녹인 곳은 방문체크
+                        }
+                    }
+                }
+                isVisited[x][y] = true;                             // 물이었던 곳 방문체크
             }
         }
+
     }
 
-    private static void startSwan(int maxX, int maxY, Dot_3197 swanL, Dot_3197 swanR) {
-        visitL[swanL.x][swanL.y] = true;
-        visitR[swanR.x][swanR.y] = true;
+    private static boolean meetEach(int maxX, int maxY) {
+        wayStack = new LinkedList<>();
+        wayStack.offer(swanL);
+        boolean[][] check = new boolean[maxX][maxY];
+        check[swanL.x][swanL.y] = true;
 
-        for(int i=0; i<4; i++) {
-            int lx = swanL.x + wayX[i];
-            int ly = swanL.y + wayY[i];
-            int rx = swanR.x + wayX[i];
-            int ry = swanR.y + wayY[i];
+        while(!wayStack.isEmpty()) {
+            Dot_3197 dot = wayStack.poll();
+//            System.out.println(dot.x + "," + dot.y + " 시작");
+            for(int i=0; i<4; i++) {
+                int posX = dot.x + wayX[i];
+                int posY = dot.y + wayY[i];
+                if(posX >=0 && posX <maxX && posY >=0 && posY <maxY) {
+                    String sign = map[posX][posY];
 
-            if(lx >=0 && lx <maxX && ly >=0 && ly <maxY) {
-                String sign = map[lx][ly];
-                if(sign.equals(".")) {      // 처음에 물이어야만 스텝에 맞게 탐색 가능
-                    leftQ.offer(new Dot_3197(lx, ly, 0));
-                    visitL[lx][ly] = true;
-                }
-            }
-            if(rx >=0 && rx <maxX && ry >=0 && ry <maxY) {
-                String sign = map[lx][ly];
-                if(sign.equals(".")) {      // 처음에 물이어야만 스텝에 맞게 탐색 가능
-                    visitR[rx][ry] = true;
-                    rightQ.offer(new Dot_3197(rx, ry, 0));
+                    if(sign.equals(".") && !check[posX][posY]) {
+                        wayStack.offer(new Dot_3197(posX, posY, 0));
+//                        System.out.println("\t" + posX + "," + posY);
+                    }
+
+                    if(posX == swanR.x && posY == swanR.y) {
+                        return true;
+                    }
+                    check[posX][posY] = true;
                 }
             }
         }
+
+        return false;
     }
 
 }
