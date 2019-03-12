@@ -17,14 +17,12 @@ package dfs_bfs;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.LinkedList;
-import java.util.Queue;
 
 public class Test_3197 {
     private static boolean[][] isVisited;
     private static Dot_3197 swanL, swanR;
-    private static Queue<Dot_3197> wayStack;
-    private static Queue<Dot_3197> queue;
+    private static Queue_3197 wayQueue, nextQueue;
+    private static Queue_3197 checkQueue;
     private static String[][] map;
     private static int[] wayX = {1, -1, 0, 0};
     private static int[] wayY = {0, 0, 1, -1};
@@ -32,13 +30,13 @@ public class Test_3197 {
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-        queue = new LinkedList<>();
-
         String lakeInfo = br.readLine();
 
         int maxX = Integer.parseInt(lakeInfo.split(" ")[0]);
         int maxY = Integer.parseInt(lakeInfo.split(" ")[1]);
         map = new String[maxX][maxY];
+        wayQueue = new Queue_3197();
+        nextQueue = new Queue_3197();
 
         boolean isAdd = false;
         for(int x=0; x<maxX; x++) {
@@ -53,6 +51,9 @@ public class Test_3197 {
                     } else {
                         swanR = new Dot_3197(x,y,0);
                     }
+                }else if(stArr[y].equals(".")) {
+//                    nextQueue.offer(new Dot_3197(x, y, 0));      //물길 저장
+                    wayQueue.offer(new Dot_3197(x,y,0));       // 물길 저장
                 }
             }
         }
@@ -64,54 +65,49 @@ public class Test_3197 {
 
     private static void bfs(int maxX, int maxY) {
         int step =0;
+        isVisited = new boolean[maxX][maxY];        // 방문기록 초기화
 
-        boolean canMeet = meetEach(maxX, maxY);
-        while(!canMeet) {
+        while(!meetEach(maxX, maxY)) {
             step++;
             meltICE(maxX, maxY);
-            canMeet = meetEach(maxX, maxY);
         }
+
         System.out.println(step);
     }
 
     private static void meltICE(int maxX, int maxY) {
-        isVisited = new boolean[maxX][maxY];
+        while(!wayQueue.isEmpty()) {
+            Dot_3197 dot = wayQueue.poll();    // 물인 곳 get
+            isVisited[dot.x][dot.y] = true;     // 방문 체크
 
-        for(int x=0; x<maxX; x++) {
-            for(int y=0; y<maxY; y++) {
-                String sign = map[x][y];
+            for(int di =0; di <4; di++) {   // 4방향 검증
+                int posX = dot.x + wayX[di];
+                int posY = dot.y + wayY[di];
 
-                for(int i=0; i<4; i++) {
-                    int posX = x+ wayX[i];
-                    int posY = y+ wayY[i];
+                if(posX >=0&& posX <maxX && posY >=0 && posY <maxY) {   // out of index 방지
+                    String sign = map[posX][posY];
 
-                    if(posX >=0 && posX <maxX && posY >=0 && posY <maxY) {
-                        if(!isVisited[x][y] && sign.equals(".") ) { // 해당 위치에 들린적 없고, 물이면
-                            String around = map[posX][posY];        // 주변 좌표
-
-                            if(around.equals("X")) {                // 주변이 얼음이면
-                                map[posX][posY] = ".";              // 녹여
-//                                System.out.println(posX + "," + posY + "녹였어");
-                            }
-                            isVisited[posX][posY] = true;           // 녹인 곳은 방문체크
-                        }
+                    if(!isVisited[posX][posY] && sign.equals("X")) {    // 얼음이면 queue에 넣자
+                        nextQueue.offer(new Dot_3197(posX, posY, 0));   // queue에 집어넣어서 다음 검증에 쓰자
+                        map[posX][posY] = ".";          // 물로 녹이기
                     }
+                    isVisited[posX][posY] = true;
                 }
-                isVisited[x][y] = true;                             // 물이었던 곳 방문체크
             }
-        }
 
+        }
+        wayQueue = nextQueue;
     }
 
     private static boolean meetEach(int maxX, int maxY) {
-        wayStack = new LinkedList<>();
-        wayStack.offer(swanL);
+        checkQueue = new Queue_3197();
+        checkQueue.offer(swanL);
         boolean[][] check = new boolean[maxX][maxY];
+
         check[swanL.x][swanL.y] = true;
 
-        while(!wayStack.isEmpty()) {
-            Dot_3197 dot = wayStack.poll();
-//            System.out.println(dot.x + "," + dot.y + " 시작");
+        while(!checkQueue.isEmpty()) {
+            Dot_3197 dot = checkQueue.poll();
             for(int i=0; i<4; i++) {
                 int posX = dot.x + wayX[i];
                 int posY = dot.y + wayY[i];
@@ -119,8 +115,7 @@ public class Test_3197 {
                     String sign = map[posX][posY];
 
                     if(sign.equals(".") && !check[posX][posY]) {
-                        wayStack.offer(new Dot_3197(posX, posY, 0));
-//                        System.out.println("\t" + posX + "," + posY);
+                        checkQueue.offer(new Dot_3197(posX, posY, 0));
                     }
 
                     if(posX == swanR.x && posY == swanR.y) {
@@ -148,6 +143,44 @@ class Dot_3197 {
     }
 }
 
+class Queue_3197 {
+    private static final int MAX_QUEUE_SIZE = 1501;
+    private int front;
+    private int rear;
+    private Dot_3197[] dot;
+
+    Queue_3197() {
+        front =0;
+        rear =0;
+        dot = new Dot_3197[MAX_QUEUE_SIZE];
+    }
+
+    public void offer(Dot_3197 point) {
+        if(rear == MAX_QUEUE_SIZE) {
+            rear =0;
+        }
+        dot[rear++] = point;
+    }
+
+    public Dot_3197 poll() {
+        if(front ==MAX_QUEUE_SIZE) {
+            front =0;
+        }
+
+        return dot[front++];
+    }
+
+    public boolean isEmpty() {
+        if(front == rear) {
+            return true;
+        }
+        return false;
+    }
+
+    public int getSize() {
+        return rear-front;
+    }
+}
 /*
 8 17
 ...XXXXXX..XX.XXX
