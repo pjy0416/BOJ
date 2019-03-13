@@ -41,16 +41,22 @@ public class Test_2573 {
         isMeltedAll = false;
 
         while(!isEnd) {
-            meltIce();      // 얼음 녹이기
-            isEnd = isParted(); // 두동강 났는지 확인
+            isEnd = meltIce();
             year++;
+            /*for(int y=0; y<maxY; y++) {
+                for(int x=0; x<maxX; x++) {
+                    System.out.print(map[y][x] + " ");
+                }
+                System.out.println();
+            }
+            System.out.println(year + " 년도여");*/
             if(isMeltedAll) {
-                year =0;
+                year =1;
                 break;
             }
         }
 
-        System.out.println(year);
+        System.out.println(year-1);
     }
 
     private static boolean isParted() {
@@ -66,9 +72,6 @@ public class Test_2573 {
                     }
                 }
             }
-        }
-        if(part >=2) {
-            return true;
         }
 
         return false;
@@ -95,13 +98,23 @@ public class Test_2573 {
         return result;
     }
 
-    private static void meltIce() {         // 녹여~~
+    private static boolean meltIce() {         // 녹여~~
         isVisited = new boolean[maxY][maxX];    // 초기화
-        int cnt =0;
+        int cnt =0;                         // 전체가 다 녹았는지 확인하는 변수
+        int part =0;                        // 몇동강이니
         for(int y=1; y<maxY-1; y++) {       // 테두리는 다 물이기 때문에
             for(int x=1; x<maxX-1; x++) {   // 테두리는 안들어가도 됨
                 int info = map[y][x];
                 if(info !=0) {  // 빙산이면
+                    if(!isVisited[y][x]) {  // 방문한 적 없으면
+                        queue.offer(new Dot_2573 (x,y));    // 일단 두동강인지 찾고보자
+                        if(searchParts()) {
+                            part++;
+                            if(part >=2) {
+                                return true;
+                            }
+                        }
+                    }
                     isVisited[y][x] = true; // 빙산 방문체크
                     map[y][x] = meltedSpot(info, x, y); // 녹여서 저장
                 } else {
@@ -109,9 +122,11 @@ public class Test_2573 {
                 }
             }
         }
+
         if(cnt == (maxX-1) * (maxY-1)) {
             isMeltedAll = true;
         }
+        return false;
     }
 
     private static int meltedSpot(final int info, final int x, final int y) {
@@ -163,11 +178,6 @@ class Queue_2573 {
     boolean isEmpty() {
         return rear == front ? true : false;
     }
-
-    void initalize() {
-        front =0;
-        rear =0;
-    }
 }
 
 class Dot_2573 {
@@ -179,4 +189,3 @@ class Dot_2573 {
         this.y = y;
     }
 }
-
