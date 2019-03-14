@@ -84,6 +84,7 @@ public class Test_2573 {
                 int info = map[y][x];
                 if(info !=0) {  // 빙산이면
                     if(!isVisited[y][x]) {  // 방문한 적 없으면
+                        cnt++;
                         queue.offer(new Dot_2573 (x,y));    // 일단 두동강인지 찾고보자
                         if(searchParts()) {                 // 큐 빠질때마다 part count
                             part++;
@@ -94,13 +95,11 @@ public class Test_2573 {
                     }
                     isVisited[y][x] = true; // 빙산 방문체크
                     map[y][x] = meltedSpot(info, x, y); // 녹여서 저장
-                } else {
-                    cnt++;                  // 맵 전체가 0이면?
                 }
             }
         }
 
-        if(cnt == (maxX-1) * (maxY-1)) {
+        if(cnt == 0) {
             isMeltedAll = true;
         }
 
