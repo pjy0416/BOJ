@@ -37,44 +37,20 @@ public class Test_2573 {
 
     private static void bfs() {
         int year =0;
-        boolean isEnd =false;
         isMeltedAll = false;
 
-        while(!isEnd) {
-            isEnd = meltIce();
-            year++;
-            /*for(int y=0; y<maxY; y++) {
-                for(int x=0; x<maxX; x++) {
-                    System.out.print(map[y][x] + " ");
-                }
-                System.out.println();
-            }
-            System.out.println(year + " 년도여");*/
-            if(isMeltedAll) {
-                year =1;
+        while(true) {
+            if(meltIce()) {     // 두동강 이상이면 멈추자
                 break;
             }
-        }
-
-        System.out.println(year-1);
-    }
-
-    private static boolean isParted() {
-        int part =0;
-        isVisited = new boolean[maxY][maxX];
-
-        for(int y=1; y <maxY-1; y++) {           //  테두리 = 물
-            for(int x=1; x <maxX-1; x++) {       //  테두리 전만 체크
-                if(map[y][x] != 0 && !isVisited[y][x]) {    // 물 아니고 방문한 적 없으면
-                    queue.offer(new Dot_2573(x, y));
-                    if(searchParts()) {
-                        part++;
-                    }
-                }
+            if(isMeltedAll) {     // 다 녹았으면 끝내자
+                year =0;        // 불가능한 경우는 0
+                break;
             }
+            year++;             // 두동강 아니면 연차 더하자
         }
 
-        return false;
+        System.out.println(year);
     }
 
     private static boolean searchParts() {
@@ -102,15 +78,16 @@ public class Test_2573 {
         isVisited = new boolean[maxY][maxX];    // 초기화
         int cnt =0;                         // 전체가 다 녹았는지 확인하는 변수
         int part =0;                        // 몇동강이니
+
         for(int y=1; y<maxY-1; y++) {       // 테두리는 다 물이기 때문에
             for(int x=1; x<maxX-1; x++) {   // 테두리는 안들어가도 됨
                 int info = map[y][x];
                 if(info !=0) {  // 빙산이면
                     if(!isVisited[y][x]) {  // 방문한 적 없으면
                         queue.offer(new Dot_2573 (x,y));    // 일단 두동강인지 찾고보자
-                        if(searchParts()) {
+                        if(searchParts()) {                 // 큐 빠질때마다 part count
                             part++;
-                            if(part >=2) {
+                            if(part >=2) {                  // 두 동강 나면 끝내
                                 return true;
                             }
                         }
@@ -126,6 +103,7 @@ public class Test_2573 {
         if(cnt == (maxX-1) * (maxY-1)) {
             isMeltedAll = true;
         }
+
         return false;
     }
 
