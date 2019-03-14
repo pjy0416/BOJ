@@ -67,7 +67,15 @@ public class Test_3197 {
             if(search(maxX, maxY)) {    // 검색하면서 만났으면 끝내고
                 break;
             }
+//            for(int x=0; x<maxX; x++) {
+//                for(int y=0; y<maxY; y++) {
+//                    System.out.print(map[x][y]);
+//                }
+//                System.out.println();
+//            }
+
             day++;                      // 아니면 날자 더하자
+//            System.out.println(day+" 경과!");
         }
 
         System.out.println(day);
@@ -91,23 +99,24 @@ public class Test_3197 {
     }
 
     private static boolean meetEach(int maxX, int maxY) {
-        Dot_3197 dot = new Dot_3197(0,0);         // 컴파일 에러 방지 객체 생성
         boolean isLeft =false;          //좌 백조
         boolean isRight =false;         //우 백조
+
         while(!queue.isEmpty()) {
-            dot = queue.poll();
+            Dot_3197 dot = queue.poll();
             isVisited[dot.x][dot.y] = true;             // 방문 체크
+
             if(swanVisit(dot, swanL)) {                 // 좌백조 체크
                 isLeft = true;
             } else if(swanVisit(dot, swanR)) {          // 우백조 체크
                 isRight = true;
             }
 
-            if(isLeft && isRight) {     // 둘다 들렀으면
-                return true;
-            }
-
             meltIce(maxX, maxY, dot);   // 아니면 녹이면서 보자
+        }
+
+        if(isLeft && isRight) {     // 둘다 들렀으면
+            return true;
         }
 
         return false;
