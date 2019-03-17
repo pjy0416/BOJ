@@ -9,6 +9,7 @@ public class Test_2468 {
     private static int line;
     private static int[][] map;
     private static boolean[][] isVisited;
+    private static Queue_2468 queue;
     private static int[] wayX = {1, -1, 0, 0};
     private static int[] wayY = {0, 0, 1, -1};
 
@@ -37,21 +38,21 @@ public class Test_2468 {
 
     private static void bfs(int maxHeight) {
         int safeArea =0;
-        Queue_2468 queue = new Queue_2468();
+        queue = new Queue_2468();
         for(int i =0; i<maxHeight; i++) {          // 비가 안올 때 부터 ~ 최대 전까지 (왜냐하면 최고 높이만큼 비오면 다 잠기니까 ~> 0개임)
             isVisited = new boolean[line][line];    // height 마다 방문기록 초기화
-            safeArea = Math.max(getSafeArea(i, queue), safeArea);        // 가장 안전구역이 많을 때를 저장
+            safeArea = Math.max(getSafeArea(i), safeArea);        // 가장 안전구역이 많을 때를 저장
             queue.initalize();      // height 마다 queue 초기화
         }
 
         System.out.println(safeArea);
     }
 
-    private static int getSafeArea(int rain, Queue_2468 queue) {     // safeArea 갯수 return 메소드
+    private static int getSafeArea(int rain) {     // safeArea 갯수 return 메소드
         int result =0;      // result 초기화
         for(int x=0; x<line; x++ ) {                // map 돌면서
             for(int y=0; y<line; y++) {
-                if(!isVisited[x][y] && isSafeArea(x, y, rain, queue, isVisited)) {      // 방문한 적 없는 안전 지역이면
+                if(!isVisited[x][y] && isSafeArea(x, y, rain)) {      // 방문한 적 없는 안전 지역이면
                     result += 1;    // 안전영역 갯수 늘려준다.
                 }
             }
@@ -60,7 +61,7 @@ public class Test_2468 {
         return result;
     }
 
-    private static boolean isSafeArea(int x, int y, int rain, Queue_2468 queue, boolean[][] isVisited) {    // 안전영역 탐색
+    private static boolean isSafeArea(int x, int y, int rain) {    // 안전영역 탐색
         isVisited[x][y] = true;             // 시작 위치 방문 체크
         if(map[x][y] <= rain) { // 안전지역 아니면
             return false;       // 끝내자
