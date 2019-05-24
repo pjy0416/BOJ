@@ -4,7 +4,8 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.IOException;
 
-public class NumOfNumeric {     // 0~9 까지 숫자 몇개 나오는지 count
+public class NumOfNumeric2577 {     // 0~9 까지 숫자 몇개 나오는지 count
+    //BOJ2577
     public static int A,B,C;
     public static int[] cnts;
 
