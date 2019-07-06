@@ -1,4 +1,4 @@
-package step5;
+package steps;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
