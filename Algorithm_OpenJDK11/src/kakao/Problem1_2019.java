@@ -4,15 +4,32 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-public class Problem1_2019 {    // 32.0 / 100.0 점... (시간초과)
+public class Problem1_2019 {    // 76.0 / 100.0 점
+    static int findNum(int cnt, int div) {
+        int num =1;
+
+        while (cnt % 10 == 0) {
+            num++;
+            cnt /= 10;
+        }
+        num += div;
+
+//        System.out.println( cnt+ " <<-카운트 횟수" + div*cnt+ "중복된 길이" + div + "에서 표현되는 숫자 길이" + num);
+        return num;
+    }
+
     static int solution(String s) {
         int len = s.length();   // 전체 길이
-        int answer =len;
+        int answer = len;
+        int min = 1001;
 
         int cnt=1;  // 중복된 횟수 카운팅
 
         for(int div =len/2; div >0; div--) {     // 문자열 자를 길이만큼 절반 ~ 1까지
+//            System.out.println("================ " + div + "==================");
+            answer = len;
             String tmp = s.substring(0, div);   // 첫번째 인덱스부터 길이만큼 자르기
+
             for(int times=1; times < len/div ; times++) {   // 100잔데 2개로 자르면 50개를 비교해야하기 때문.
                 String dest = s.substring(div*times, div + div*times);
 
@@ -20,7 +37,7 @@ public class Problem1_2019 {    // 32.0 / 100.0 점... (시간초과)
                     cnt++;              // 횟수 증가
                 } else {    // 여러번 중복되는 것 체크
                     if(cnt !=1) {   // 현재까지 중복된 갯수만큼 글자 줄여주기
-                        int reduceChar = div*cnt - (div+1);   // 중복된 글자 수 - 표현될 글자 수
+                        int reduceChar = div*cnt - findNum(cnt, div);   // 중복된 글자 수 - 표현될 글자 수
                         answer -= reduceChar ;   // 줄어든 글자 수 만큼 빼주기
                         cnt =1;         // 중복 체크 횟수 초기화
                     }
@@ -29,14 +46,15 @@ public class Problem1_2019 {    // 32.0 / 100.0 점... (시간초과)
             }
 
             if(cnt !=1) { // 검사 끝나고 잔여 횟수가 남아있으면
-                int reduceChar = (cnt*div) - (div+1);
+                int reduceChar = (cnt*div) - findNum(cnt, div);   // 중복된 글자 수 - 표현될 글자 수
                 answer -= reduceChar;
             }
 
-            if(answer != len) {
-                break;
-            }
+            min = min > answer ? answer : min;
+            cnt =1;
         }
+
+        answer = min;
 
         return answer;
     }
