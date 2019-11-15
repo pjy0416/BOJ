@@ -23,34 +23,35 @@ struct MyStack {
 	}
 };
 
-int findIDX(vector<vector<int>> board, int spot) {
-	int idx = -1;
-
-	for (int i = 0; i < board.size(); i++) {
-		if (board[i].at(spot) != 0) return i;
-	}
-
-	return idx;
-}
-
 int solution(vector< vector<int> > board, vector <int> moves) {
 	int answer = 0;
-	MyStack stack;
+	vector<int> stack;
 
 	int len = moves.size();
-	for (int i = 0; i < len; i++) {
-		int spot = moves.at(i) - 1;
-		int idx = findIDX(board, spot);
+	for (int i = 0; i < len; i++) {	// 크레인 입력 명령 수 만큼
+		int spot = moves.at(i) - 1;	// 크레인 위치 받아오기
+		//cout << spot << "에 크레인 위치" << endl;
 
-		if (idx != -1) {
-			if (stack.peek() == board[idx][spot]) {
-				stack.pop();
-				answer += 2;
+		for (int j = 0; j < board.size(); j++) {	// 크레인 위치에서 depth만큼 들어감
+			if (board[j].at(spot) != 0) {			// 들어갔을 때 비어있는 곳이 아니면
+				if (stack.empty()) {				// 스택 비어있으면 
+				//	cout << board[j].at(spot) << "가 스택에 들어갔어요 !" << endl;
+					stack.push_back(board[j].at(spot));		// 스택에 넣기
+				}
+				else {
+					if (stack.back() == board[j].at(spot)) {	// 스택에 있는 인형이 크레인에 있는 인형이랑 같으면
+					//	cout << stack.back() << "에서 제거 됐어요!" << endl;
+						stack.pop_back();	// 제거
+						answer += 2;		// 카운트 증가
+					}
+					else {		// 비어있지도 않고, 인형이 안같을 때
+				//		cout << board[j].at(spot) << "가 스택에 들어갔어요 !" << endl;
+						stack.push_back(board[j].at(spot));		// 스택에 넣기
+					}
+				}
+				board[j][spot] = 0;
+				break;
 			}
-			else {
-				stack.push(board[idx][spot]);
-			}
-			board[idx][spot] = 0;
 		}
 	}
 	
