@@ -1,0 +1,18 @@
+# All
+.vs
+*.vcx*
+*.log
+*.obj
+*.idb
+
+#tlog?
+*.tlog
+
+#Debug
+*.exe
+*.ilk
+*.pdb
+
+#sln 
+*.sln
+
