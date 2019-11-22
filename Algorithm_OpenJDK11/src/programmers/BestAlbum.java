@@ -9,22 +9,90 @@ public class BestAlbum {    // TimeOver
     // 저장될 때 내림차순으로 저장
     // 장르별로 ID와 플레이횟수를 저장,
 
+    /*
+    속한 노래가 많이 재생된 장르를 먼저 수록합니다.                                 <= play가 가장 높은 음악이 속한 장르를 우선적으로 수록
+    장르 내에서 많이 재생된 노래를 먼저 수록합니다.                                 <= 해당 장르에서 재생된 순서대로 수록
+    장르 내에서 재생 횟수가 같은 노래 중에서는 고유 번호가 낮은 노래를 먼저 수록합니다.    <= 재생횟수가 같으면 먼저 나온거 부터 수록
+    */
+
+    /*
+//    ============================================  Solve 1
+    public static int[] sol(String[] genres, int[] plays) {
+        Map<String, int[] > songs = new HashMap<>();     // 전체 음악 저장
+        Map<Integer, Integer> song= new HashMap<>();    // 음악별 플레이 횟수
+        Map<String, Integer> maxPerGenre = new HashMap<>();
+
+        song.put(-1, 0);                                // Exception 방지 (없는 key 불러오는 것)
+
+        for(int i=0; i<genres.length; i++) {
+            String genre = genres[i];
+            int play = plays[i];
+            song.put(i, play);
+
+            if(!songs.containsKey(genre)) { // 장르가 등록된 적이 없으면
+                int[] tmp = { i,-1 ,-1};    // out of index 방지로 3번째 인덱스까지 생성
+                songs.put(genre, tmp);
+                maxPerGenre.put(genre, play);
+            } else {    // 등록된 적 있으면
+                int[] tmp = songs.get(genre);
+                songs.replace(genre,saveNewData(song, tmp, i));
+                maxPerGenre.replace(genre, Math.max(maxPerGenre.get(genre), play));
+            }
+        }
+
+        List<String> keyList = getOrder(maxPerGenre);
+        List<Integer> idList = new ArrayList<>();
+
+        for(String key : keyList) {
+            int[] num = songs.get(key);
+            for(int i=0; i<2; i++) {
+                if(num[i] != -1) {
+                    idList.add(num[i]);
+                }
+            }
+        }
+        int[] answer = new int[idList.size()];
+        int idx =0;
+
+        for(int num : idList) {
+            answer[idx++] = num;
+            System.out.println(num);
+        }
+
+        return answer;
+    }
+
+    private static int[] saveNewData(Map<Integer, Integer> song, int[] num, int idx) {
+        int temp = song.get(idx);
+
+        for(int i=1; i>=0; i--) {
+            if(temp > song.get(num[i]) ) {   // 바꿀게 더 크면
+                num[i+1] = num[i];
+                num[i] = idx;
+            }
+        }
+
+        return num;
+    }
+//    ======================= Sovle1
+*/
+//   ======================== Solve 2
     public static int[] solution(String[] genres, int[] plays) {
-        Map<String, Song > songs = new HashMap<>();   // 장르별 노래 리스트(고유 번호와 플레이 횟수) 저장 변수
+        Map<String, Song> songs = new HashMap<>();   // 장르별 노래 리스트(고유 번호와 플레이 횟수) 저장 변수
         Map<String, Integer> titles = new HashMap<>();  // 장르 별 최고 재생횟수 저장 변수
 
         for(int i=0; i<genres.length; i++) {
-            Song tmp = new Song(i, plays[i]);       // id와 플레이 횟수 저장
+            int play = plays[i];
+            String genre = genres[i];
 
-            if(!songs.containsKey(genres[i])) {     // map에 장르가 없으면
-                songs.put(genres[i], tmp);          // 장르별 노래 리스트 저장
-                titles.put(genres[i], plays[i]);    // 장르에 플레이 횟수 저장
+            Song tmp = new Song(i, play);       // id와 플레이 횟수 저장
+
+            if(!songs.containsKey(genre)) {     // map에 장르가 없으면
+                songs.put(genre, tmp);          // 장르별 노래 리스트 저장
+                titles.put(genre, play);        // 장르에 플레이 횟수 저장
             } else {                                // 있으면
-                songs.replace(genres[i], saveData(songs.get(genres[i]), tmp));
-
-                if(titles.get(genres[i]) < plays[i]) {      // 장르 플레이 횟수 최대값 발견시
-                    titles.replace(genres[i], plays[i]);    // 최대값을 바꿔준다.
-                }
+                songs.replace(genre, saveData(songs.get(genre), tmp));
+                titles.replace(genre, titles.get(genre) + play);
             }
         }
 
@@ -52,13 +120,20 @@ public class BestAlbum {    // TimeOver
         return answer;
     }
 
+     private static Song saveData(Song prevSong, Song newSong) {
+        for(int i=0; i<2; i++) {
+            if(newSong.play[0] > prevSong.play[i]) {    // 이미 대소비교를 해줌
+                prevSong.add(i, newSong);
+                return prevSong;
+            }
+        }
+
+        return prevSong;
+    }
+//    ==================== Solve2
+
     // 타이틀 별로 내림차순 해주기
     private static List<String> getOrder(Map<String, Integer> titles) {
-        /*
-        List<String> keySetList = new ArrayList<>(titles.keySet());
-        keySetList.sort(Comparator.reverseOrder());
-        */
-
         // 내림차순 //
         List<String> keySetList = new ArrayList<>(titles.keySet());
         Collections.sort(keySetList, new Comparator<String>() {
@@ -69,17 +144,6 @@ public class BestAlbum {    // TimeOver
         });
 
         return keySetList;
-    }
-
-    private static Song saveData(Song prevSong, Song newSong) {
-        for(int i=0; i<2; i++) {
-            if(newSong.play[0] > prevSong.play[i]) {    // 이미 대소비교를 해줌
-                prevSong.add(i, newSong);
-                return prevSong;
-            }
-        }
-
-        return prevSong;
     }
 
     public static void main(String[] args) {
@@ -93,11 +157,12 @@ public class BestAlbum {    // TimeOver
 
 
         solution(genres, plays);
+//        sol(genres,plays);
     }
 }
 
 class Song {
-    private final int MAXSIZE = 2;
+    private final int MAXSIZE = 100;
     int[] id;
     int[] play;
 
