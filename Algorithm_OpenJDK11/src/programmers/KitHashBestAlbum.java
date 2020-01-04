@@ -2,7 +2,7 @@ package programmers;
 
 import java.util.*;
 
-public class BestAlbum {    // TimeOver
+public class KitHashBestAlbum {    // TimeOver
     // 시간초과 같은데 시간 줄이는거 생각해보기 (3초 이내로 끊기)
 
     // 장르가 키가되고, 그 안에 노래 ID랑 플레이 횟수가 들어가게 만들자.

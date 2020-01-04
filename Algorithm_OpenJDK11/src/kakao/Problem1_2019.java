@@ -14,24 +14,28 @@ public class Problem1_2019 {    // 76.0 / 100.0 점
         }
         num += div;
 
-//        System.out.println( cnt+ " <<-카운트 횟수" + div*cnt+ "중복된 길이" + div + "에서 표현되는 숫자 길이" + num);
+//        System.out.println( cnt+ " <<-카운트 횟수 " + div*cnt+ " 중복된 길이" + div + " 에서 표현되는 숫자 길이" + num);
         return num;
     }
 
     static int solution(String s) {
         int len = s.length();   // 전체 길이
-        int answer = len;
-        int min = 1001;
+        int answer;
+        int min = 1001;         // 1~1000자리의 문자열이기 때문에 최솟값은 최대보다 1 큰 1001로 설정
 
         int cnt=1;  // 중복된 횟수 카운팅
 
+        if(len <=2) {
+            return len;
+        }
+
         for(int div =len/2; div >0; div--) {     // 문자열 자를 길이만큼 절반 ~ 1까지
 //            System.out.println("================ " + div + "==================");
-            answer = len;
+            answer = len;   // 답 초기화
             String tmp = s.substring(0, div);   // 첫번째 인덱스부터 길이만큼 자르기
 
             for(int times=1; times < len/div ; times++) {   // 100잔데 2개로 자르면 50개를 비교해야하기 때문.
-                String dest = s.substring(div*times, div + div*times);
+                String dest = s.substring(div*times, div + div*times);  // next 문자열
 
                 if(tmp.equals(dest)) {  // 전에랑 글자 같아?
                     cnt++;              // 횟수 증가
@@ -52,6 +56,8 @@ public class Problem1_2019 {    // 76.0 / 100.0 점
 
             min = min > answer ? answer : min;
             cnt =1;
+//            System.out.println(answer);
+//            System.out.println("===========================================");
         }
 
         answer = min;
