@@ -4,120 +4,127 @@ import java.util.LinkedList;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
-public class KitHeapRamyunFactory {     // 40.0/100.0 
+public class KitHeapRamyunFactory {     // 40.0/100.0
 
-    /*  1. K일 까지 필요한 밀가루 양 = K-1톤
-        2.
-
+    /*  1. stock이 소진하기 전에 받을 수 있어???
+        2. 받을 수 있는게 몇개야??
+        3. 그 중에 제일 큰 거를 가져와
      */
     private static int solution(int stock, int[] dates, int[] supplies, int k) {
         int answer = 0;
 
         int total = stock;
 
-        PriorityQueue<Integer> dateQueue = new PriorityQueue<>();
-        Queue<Integer> supplyQueue = new LinkedList<>();
+        PriorityQueue<Supply> supplyQueue = new PriorityQueue<>();
 
-        for(int date : dates) {
-            dateQueue.offer(date);
-        }
-        for(int sup : supplies) {
-            supplyQueue.offer(sup);
+        for(int i=0; i< dates.length; i++) {
+            supplyQueue.offer(new Supply(dates[i], supplies[i]));
         }
 
         int day =0;
-        int idx =0;
+
+        Queue<Supply> tmp = new LinkedList<>();
 
         while(total < k) {
+            stock--;
+
+            if(stock ==0) {
+                stock += supplyQueue.poll().quantity;
+                total += stock;
+                answer++;
+            }
+
             int max =0;
-            int date = 0;
-            day++;
+            int date =0;
+            System.out.println(day +"일 차 시작");
+            System.out.println("Stock = " + stock);
+            System.out.println("Total = " + total);
+            System.out.println("K = " + k);
 
-//            System.out.println(day +"일 차 Stock = " + stock + "\t Total = " + total + "\t K = " + k);
+            while(!supplyQueue.isEmpty()) {
+                // 1. 날짜 안에 받을 수 있어??
+                Supply supply = supplyQueue.poll();
 
-//            System.out.println("IDX = " + idx);
-            int prev =0;
-            Queue<Integer> tmp = new LinkedList<>();
-            while(!dateQueue.isEmpty()) {
-//                System.out.println(day + "일 차에 와일문");
-                if(stock >= dateQueue.peek()) {
-                    date = dateQueue.poll();
-                    int supply = supplyQueue.poll();
-                    if(max < supply) {
-//                        System.out.println(max + "와 " + supply + " 비교 결과 새로운게 더 큼");
-                        max = supply;
-                    } else {
-//                        System.out.println(max + "와 " + supply + " 비교 결과 더 작음");
-                        tmp.offer(date);
-                        supplyQueue.offer(supply);
+                System.out.println("Date : " + supply.date);
+                System.out.println("Supply : " + supply.quantity);
+                if(stock+1 >= supply.date) {
+                    // 최대치 인 값인지 확인
+                    if(max < supply.quantity) {
+
+                        if(max !=0) { // 최댓값이 0이 아닌애는 다시 저장
+                            tmp.offer(new Supply(date, max));
+                        }
+                        max = supply.quantity; // 맞으면 max 저장
+                        date = supply.date;
+                    } else { // 아니면 tmp에 저장
+                        System.out.println(supply.date +"일 과 " + supply.quantity +"다시 저장");
+                        tmp.offer(supply);
                     }
-                } else {
-//                    System.out.println(dateQueue.peek() + "에서 와일문 종료");
+                } else {    // 날짜 안에 받을 수 없는거였으면 다시 큐에 넣어줌
+                    supplyQueue.offer(supply);
                     break;
                 }
             }
 
-            for(int i=0; i< tmp.size(); i++) {
-//                System.out.println("추가 돌아가는중");
-                supplyQueue.offer(((LinkedList<Integer>) supplyQueue).pollLast());
-                dateQueue.offer(tmp.poll());
+            while(!tmp.isEmpty()) {
+                supplyQueue.offer(tmp.poll());
             }
 
             if(max != 0) {
-//                System.out.println(date +"에서 " + max + "만큼 더해줌");
+                System.out.println(date +"에서 " + max + "만큼 더해줌");
                 stock += max;
                 total += max;
                 answer++;
             }
-//            k--;
-            if(day ==40) {
-                break;
-            }
-
-            stock--;
 
 
-            /*
-            if(stock <=0) {
-                //재고가 떨어졌을 경우
-                int max = 0;
-
-                for (int i = idx; i < dates.length; i++) {
-                    if (dates[i] <= total-1) { // 기간안에 받을 수 있는 날이 있었다면
-//                        System.out.println(i+"번 째 탐색중");
-                        if (max < supplies[i]) {
-                            max = supplies[i];
-                        }
-                    } else {
-                        idx = i-1;
-                        break;
-                    }
-                }
-
-                if(max !=0) {
-//                    System.out.println(idx + "에서 Max = " + max + " 추가함" );
-                    stock += max;
-                    total += max;
-                    idx++;
-                    answer++;
-                }
-            }
-            */
-
+            System.out.println(day++ +"일 차 끝");
+            System.out.println("Stock = " + stock);
+            System.out.println("Total = " + total);
+            System.out.println("K = " + k);
         }
         return answer;
     }
 
     public static void main(String[] args) {
+//        /*
+        int stock = 4;
+        int[] date = {4,10,15};
+        int[] supplies = {20,5,10};
+        int k = 30;
+//        */
+        /*
         int stock = 4;
         int[] date = {1,2,3,4};
         int[] supplies = {1,1,1,1};
         int k = 6;
-
+        */
+/*
+        int stock = 4;
+        int[] date = {1,2,3,4};
+        int[] supplies = {10, 40, 30, 20};
+        int k = 100;
+*/
         System.out.println(solution(stock,date,supplies,k));
     }
 }
 
+class Supply implements Comparable<Supply> {
+    int date;
+    int quantity;
+
+    public Supply(int date, int quantity) {
+        this.date = date;
+        this.quantity = quantity;
+    }
+
+    @Override
+    public int compareTo(Supply target) {
+        // 큐에 저장되는 값
+        return this.date >= target.date ? 1 : -1;
+    }
+
+}
 /*
 문제 설명
 라면 공장에서는 하루에 밀가루를 1톤씩 사용합니다.
