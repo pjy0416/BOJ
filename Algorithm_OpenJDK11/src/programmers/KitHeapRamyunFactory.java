@@ -1,10 +1,8 @@
 package programmers;
 
-import java.util.LinkedList;
 import java.util.PriorityQueue;
-import java.util.Queue;
 
-public class KitHeapRamyunFactory {     // 80.0/100.0
+public class KitHeapRamyunFactory {     // 100.0/100.0
 
     /*  1. stock이 소진하기 전에 받을 수 있어???
         2. 받을 수 있는게 몇개야??
@@ -27,20 +25,21 @@ public class KitHeapRamyunFactory {     // 80.0/100.0
 
 
         while(total < k) {
-            stock--;
-
-//            System.out.println(day +"일 차 시작");
-//            System.out.println("Stock = " + stock);
-//            System.out.println("Total = " + total);
-//            System.out.println("K = " + k);
-
+            /*      프린트문
+            System.out.println(day +"일 차 시작");
+            System.out.println("Stock = " + stock);
+            System.out.println("Total = " + total);
+            System.out.println("K = " + k);
+            */
             while(!supplyQueue.isEmpty()) {
                 // 1. 날짜 안에 받을 수 있어??
                 Supply supply = supplyQueue.poll();
 
-//                System.out.println("Date : " + supply.date);
-//                System.out.println("Supply : " + supply.quantity);
-                if(stock+1 >= supply.date) {
+                /*  확인하기 위한 출력문
+                System.out.println("Date : " + supply.date);
+                System.out.println("Supply : " + supply.quantity);
+                */
+                if(stock >= supply.date) {
                     // 후보군에 넣어주기
                     supplyCandidates.offer(new Supply2(supply));
                 } else {    // 날짜 안에 받을 수 없는거였으면 다시 큐에 넣어줌
@@ -63,6 +62,7 @@ public class KitHeapRamyunFactory {     // 80.0/100.0
             System.out.println("Total = " + total);
             System.out.println("K = " + k);
             */
+            stock--;
         }
         return answer;
     }
