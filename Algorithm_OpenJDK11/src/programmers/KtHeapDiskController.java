@@ -4,12 +4,12 @@ import java.util.PriorityQueue;
 
 public class KtHeapDiskController {
     public static void main(String[] args) {
-        int[][] jobs = {{0, 3}, {1, 9}, {2, 6}};
+        int[][] jobs = {{0, 3}, {1, 9}, {500, 6}};
 //        int[][] jobs = {{0, 3}, {1, 9}, {2, 6}};
         System.out.println(solution(jobs));
     }
 
-    private static int solution(int[][] jobs) { // 35.0 / 100.0
+    private static int solution(int[][] jobs) { // 40.0 / 100.0
         int answer =0;
         int jobCnt = jobs.length;
 
@@ -31,7 +31,7 @@ public class KtHeapDiskController {
         }*/
 
         WaitJob startJob = waitQueue.poll();
-        int time = startJob.wt;
+        int time = 1000 + startJob.wt;  // 최대 1000초 까지 작업이 들어올 수 있음
         int prevEnd = startJob.wt;
         answer += startJob.wt;
 
@@ -52,12 +52,16 @@ public class KtHeapDiskController {
                 Job job = jobQueue.poll();
 
                 if(prevEnd <= i) {
+                    // 중간에 작업이 뜨는 기간이 아닐때는 대기시간 구해주고, 아닐 때는 대시기간 0으로 초기화
+                    int watingTime = prevEnd == i ? prevEnd - job.startTime : 0;
+
 //                    System.out.println(i +"일 때 들어왔어요");
-//                    System.out.println("대기시간 => " + (prevEnd - job.startTime));
-//                    System.out.println("요청부터 종료까지 ~> " + ( job.workTime + prevEnd - job.startTime) + "걸려요");
+//                    System.out.println("대기시간 => " + watingTime);
+//                    System.out.println("요청부터 종료까지 ~> " + ( job.workTime + watingTime) + "걸려요");
                     time += job.workTime;
-                    answer += job.workTime + (prevEnd - job.startTime); // 진행 시간에 대기시간 더해주기
-                    prevEnd += job.workTime;
+                    answer += job.workTime + watingTime; // 진행 시간에 대기시간 더해주기
+//                    prevEnd = prevEnd == i ? prevEnd + job.workTime : i+job.workTime;
+                    prevEnd = i+job.workTime;
                 } else {
                     jobQueue.offer(job);
                     break;
