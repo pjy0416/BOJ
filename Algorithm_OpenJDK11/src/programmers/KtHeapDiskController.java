@@ -4,7 +4,9 @@ import java.util.PriorityQueue;
 
 public class KtHeapDiskController {
     public static void main(String[] args) {
-        int[][] jobs = {{0, 3}, {1, 9}, {500, 6}};
+//        int[][] jobs = {{0,9}, {0,4}, {0,5}, {0,7}, {0,3}};
+        int[][] jobs = {{3, 2}, {4, 5}, {5, 5}};
+//        int[][] jobs = {{0, 3}, {1, 9}, {500, 6}};
 //        int[][] jobs = {{0, 3}, {1, 9}, {2, 6}};
         System.out.println(solution(jobs));
     }
@@ -20,26 +22,29 @@ public class KtHeapDiskController {
             waitQueue.offer(new WaitJob(job[0], job[1]));
         }
 
-        /*while(!waitQueue.isEmpty()) {
-            WaitJob job = waitQueue.poll();
-            System.out.println(job.st + " \t\t" + job.wt);
-            jobQueue.offer(new Job(job));
+        WaitJob startJob = waitQueue.poll();    // 기준
+        jobQueue.offer(new Job(startJob));
+        while(!waitQueue.isEmpty()) {
+            WaitJob wait = waitQueue.poll();
+            // 작업 시작 시간이 같은 작업 선별
+            if(startJob.st == wait.st) {
+                jobQueue.offer(new Job(wait));
+            } else {
+                waitQueue.offer(wait);
+                break;
+            }
         }
-        while(!jobQueue.isEmpty()) {
-            Job job = jobQueue.poll();
-            System.out.println(job.startTime + " \t\t " + job.workTime);
-        }*/
 
-        WaitJob startJob = waitQueue.poll();
-        int time = 1000 + startJob.wt;  // 최대 1000초 까지 작업이 들어올 수 있음
-        int prevEnd = startJob.wt;
-        answer += startJob.wt;
+        int time = 1000;  // 최대 1000초 까지 작업이 들어올 수 있음
+        int prevEnd = 0;
 
         for(int i=0; i<=time; i++) {
+//            System.out.println(i + "번 째 for문 돌고있고요");
+//            System.out.println("지금 Prev는 = > " + prevEnd + "입니다");
             while(!waitQueue.isEmpty()) {
                 WaitJob wait = waitQueue.poll();
                 if(wait.st <= i) {
-//                    System.out.println(wait.st + "시작 " + wait.wt + "만큼 일하는거 추가~~");
+//                    System.out.println(i+ "초 에서 " + wait.st + "시작 " + wait.wt + "만큼 일하는거 추가~~");
                     jobQueue.offer(new Job(wait));
                 } else {
 //                    System.out.println(wait.st + "에 시작 해서 " + wait.wt +"만큼 일하는 작업 빠꾸");
@@ -53,15 +58,18 @@ public class KtHeapDiskController {
 
                 if(prevEnd <= i) {
                     // 중간에 작업이 뜨는 기간이 아닐때는 대기시간 구해주고, 아닐 때는 대시기간 0으로 초기화
-                    int watingTime = prevEnd == i ? prevEnd - job.startTime : 0;
+                    int watingTime = (prevEnd == i && job.startTime < i) ? prevEnd - job.startTime : 0;
 
-//                    System.out.println(i +"일 때 들어왔어요");
-//                    System.out.println("대기시간 => " + watingTime);
-//                    System.out.println("요청부터 종료까지 ~> " + ( job.workTime + watingTime) + "걸려요");
+                    /* Print 확인
+                    System.out.println(i +"일 때 들어와서");
+                    System.out.println(job.startTime +"에서 시작해서 " + job.workTime + "만큼 일하는 작업 시작해요");
+                    System.out.println("Prev End => " + prevEnd);
+                    System.out.println("대기시간 => " + watingTime);
+                    System.out.println("요청부터 종료까지 ~> " + ( job.workTime + watingTime) + "걸려요");
+                    */
                     time += job.workTime;
                     answer += job.workTime + watingTime; // 진행 시간에 대기시간 더해주기
-//                    prevEnd = prevEnd == i ? prevEnd + job.workTime : i+job.workTime;
-                    prevEnd = i+job.workTime;
+                    prevEnd =prevEnd < job.startTime ? job.startTime + job.workTime : i+job.workTime; // 진행시작한 작업이 끝나는 시점 저장
                 } else {
                     jobQueue.offer(job);
                     break;
@@ -69,33 +77,9 @@ public class KtHeapDiskController {
             }
         }
 
+        //Print 확인
 //        System.out.println("Time => " + time);
 //        System.out.println("Ans => " + answer);
-        /*
-        // 처음 작업은 바로 시작해주기
-        jobQueue.offer(new Job(waitQueue.poll()));
-        int prevEnd =0;
-
-        while(!jobQueue.isEmpty()) {
-            Job job = jobQueue.poll();
-            answer += job.elapsedTime + (prevEnd - job.startTime);
-            prevEnd += job.endTime;     // 작업마다 EndTime이 밀리기 때문에 더해줌
-//            System.out.println(job.startTime +"에 들어와서 " + job.elapsedTime +"동안 진행");
-//            System.out.println("대기시간 = " + (prevEnd - job.startTime));
-//            System.out.println("Answer = > " + answer);
-
-            while(!waitQueue.isEmpty()) {
-                WaitJob wait = waitQueue.poll();
-//                System.out.println("Wait st => " + wait.st);
-                if(wait.st <= answer) {
-                    jobQueue.offer(new Job(wait));
-                } else {
-                    waitQueue.offer(wait);
-                    break;
-                }
-            }
-        }
-        */
 
         return answer/jobCnt;
     }
