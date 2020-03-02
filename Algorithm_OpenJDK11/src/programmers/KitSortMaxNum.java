@@ -1,6 +1,8 @@
 package programmers;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 
 public class KitSortMaxNum {
@@ -8,7 +10,21 @@ public class KitSortMaxNum {
     private static String solution(int[] numbers) {
         String answer = "";
 
-        Integer[] numArr = new Integer[numbers.length];
+        ArrayList<Integer> numList = new ArrayList<>();
+        for(Integer num : numbers) {
+            numList.add(num);
+        }
+
+        Collections.sort(numList, new Comparator<Integer>() {
+            @Override
+            public int compare(Integer o1, Integer o2) {
+                String str1 = String.valueOf(o1);
+                String str2 = String.valueOf(o2);
+                return (str2+str1).compareTo(str1+str2);
+            }
+        });
+
+        /*Integer[] numArr = new Integer[numbers.length];
 
         for(int i=0; i<numbers.length; i++) {
             numArr[i] = Integer.valueOf(numbers[i]);
@@ -27,6 +43,10 @@ public class KitSortMaxNum {
 
         for(Integer num : numArr) {
             answer += String.valueOf(num);
+        }*/
+
+        for(int i=0; i< numList.size(); i++) {
+            answer += String.valueOf(numList.get(i));
         }
 
         if(answer.replace("0","").equals("")) {
