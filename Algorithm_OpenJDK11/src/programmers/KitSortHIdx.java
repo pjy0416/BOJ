@@ -8,43 +8,57 @@ public class KitSortHIdx {
         int answer = 0;
 
         int total = citations.length;
-        int half = total %2 == 0 ? total/2 -1 : total/2;
-        int avg =0;
-
-        for(int i =0; i< total; i++) {
-            avg += citations[i];
-        }
-
-        avg /= total;
+//        int half = total %2 == 0 ? total/2 -1 : total/2;
 
         Arrays.sort(citations);
 
-        for(int i=0; i<total-1; i++) {
-            int cnt =0;
-            int origin = citations[i];  // 기준 h가 됨
-
-            for(int j=i+1; j<total; j++) {
-                int target = citations[j];
-
-                if(origin <= target) { // h 이상인 수 카운트
-                    cnt++;
+        for(int i=0; i<total; i++) {
+            int bigCnt =0;
+            int smallCnt =0;
+            for(int j=0; j<total; j++) {
+                if(i+1 <= citations[j]) {
+                    bigCnt++;
+                } else {
+                    smallCnt++;
                 }
             }
+//            System.out.println(i+1 + "보다 큰 수 Cnt => " + bigCnt);
+//            System.out.println(i+1 + "보다 작은 수 Cnt => " + smallCnt);
 
-            if(origin <= cnt) {
-                answer = cnt;
+            if(bigCnt >= i+1 && smallCnt < i+1) {
+//                System.out.println(bigCnt + "가 " + (i+1) + "이상이고 " + smallCnt +"가 " + (i+1) +"이하이기 때문에 변경");
+                answer = Math.max(answer, i+1);
             }
         }
+
+        /*
+        // 0,1,3,5,6
+        for(int i=0; i<total-1; i++) {
+            int cnt =1;
+            int origin = citations[i];  // 기준 h가 됨
+            System.out.println(origin + " 시작");
+
+            cnt = total-i;
+            System.out.println(cnt);
+
+            if(origin <= cnt && total - cnt < origin) {
+                System.out.println(cnt + "가 " + origin + "이상 이니까 정답 변경");
+//                cnt == origin ? answer = cnt-1 : answer = origin;
+                answer = cnt == origin ? origin : cnt-1 ;
+            }
+        }
+        */
 //        System.out.println(answer);
 
         return answer;
     }
 
     public static void main(String[] args) {
-        int[] citations = {3, 0, 6, 1, 5};
+//        int[] citations = {3, 0, 6, 1, 5};
+//        int[] citations = {22, 42};
 //        int[] citations = {0, 0, 0, 0, 0};
 //        int[] citations = {1, 4, 2, 7, 3};
-//        int[] citations = {4, 3, 3, 3, 3};
+        int[] citations = {4, 3, 3, 3, 3};
 
         System.out.println(solution(citations));
     }
