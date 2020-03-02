@@ -1,138 +1,52 @@
 package programmers;
 
-
-import java.util.PriorityQueue;
+import java.util.Arrays;
+import java.util.Comparator;
 
 public class KitSortMaxNum {
 
     private static String solution(int[] numbers) {
         String answer = "";
-        PriorityQueue<MyNum> candidates = new PriorityQueue<>();
-//        int total =0;
 
-        for(int num : numbers) {
-            MyNum myNum = new MyNum((num));
-            candidates.offer(myNum);
-//            total += myNum.getDigit(myNum);
+        Integer[] numArr = new Integer[numbers.length];
+
+        for(int i=0; i<numbers.length; i++) {
+            numArr[i] = Integer.valueOf(numbers[i]);
         }
 
-//        System.out.println(total);
 
-        while(!candidates.isEmpty()) {
-            MyNum tmp = candidates.poll();
-            answer += tmp.getNum(tmp);
+        Arrays.sort(numArr, new Comparator<Integer>() {
+            @Override
+            public int compare(Integer o1, Integer o2) {
+                String str1 = String.valueOf(o1);
+                String str2 = String.valueOf(o2);
+
+                return (str2+str1).compareTo(str1+str2);
+            }
+        });
+
+        for(Integer num : numArr) {
+            answer += String.valueOf(num);
         }
-        if(answer.replace("0", "").equals("")) {
-            return "0";
+
+        if(answer.replace("0","").equals("")) {
+            answer = "0";
         }
 
         return answer;
     }
 
     public static void main(String[] args) {
-//        int[] numbers = {0, 0, 0, 0};
+        int[] numbers = {0, 0, 0, 0};
 //        int[] numbers = {12, 121};
 //        int[] numbers = {21, 212};
-        int[] numbers = {3, 30, 34, 5, 9};
+//        int[] numbers = {3, 30, 34, 5, 9};
 //        int[] numbers = {6, 10, 2};
 
         System.out.println(solution(numbers));
     }
 }
 
-class MyNum implements Comparable<MyNum> {
-    private int first;
-    private int digit;
-    int num;
-
-    public MyNum(int num) {
-        int tmp = num;
-        int cnt =0;
-        while(tmp /10 !=0) {
-            tmp /= 10;
-            cnt++;
-        }
-        this.first = tmp;
-        this.num = num;
-        this.digit = cnt;
-    }
-
-    public int getDigit(MyNum mynum) {
-        return mynum.digit;
-    }
-
-    public String getNum(MyNum mynum) {
-        String result = "";
-//        System.out.println(mynum.num +" 겟 넘버 \t\t Digit = " + mynum.digit);
-        int num = mynum.num;
-        for(int i = mynum.digit; i >=0; i--) {
-            int div = (int) Math.pow(10,i);
-            result += String.valueOf(num/div);
-            num %= div;
-//            System.out.println(result + " 진행 중");
-        }
-//        System.out.println(result +" 완성");
-        return result;
-    }
-
-    @Override
-    public int compareTo(MyNum mynum) {
-        if(this.first < mynum.first) {
-            return 1;
-        } else if (this.first == mynum.first) {
-            // 한자리 수가 아닌 경우
-            if(this.digit !=0) {
-                int digitOrigin = this.digit;
-                int origin = this.num;
-
-                // 자리수를 줄여가면서 비교
-                while (digitOrigin != 1) {
-                    origin /= 10;
-                    digitOrigin--;
-
-                    int digitTarget = mynum.digit;
-                    int target = mynum.num;
-                    while (digitTarget != 0) {
-                        target %= 10;
-                        digitTarget--;
-
-                        if (origin < target) {
-                            return 1;
-                        } else if (origin > target) {
-                            return -1;
-                        }
-                    }
-
-                    // target의 자리수가 0일 경우가 있으니까
-                    if(origin <= target) {
-                        return 1;
-                    } else {
-                        return -1;
-                    }
-                }
-            } else {
-//                System.out.println(mynum.num + "일 때 들어왔어요");
-//                System.out.println("Origin = " + this.num);
-                int digitTarget = mynum.digit;
-                int target = mynum.num;
-                while (digitTarget != 0) {
-//                    System.out.println("while 들어왔음");
-                    target %= 10;
-                    digitTarget--;
-
-                    if (this.first < target) {
-                        return 1;
-                    } else if (this.first> target) {
-                        return -1;
-                    }
-                }
-            }
-        } else {
-            return -1;
-        }
-        return this.first <= mynum.first ? 1 : -1;
-    }
-}
 
 /*
 문제 설명
