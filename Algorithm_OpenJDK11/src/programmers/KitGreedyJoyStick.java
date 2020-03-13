@@ -1,9 +1,5 @@
 package programmers;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-
 public class KitGreedyJoyStick {
 
     private static int solution(String name) {
@@ -11,159 +7,54 @@ public class KitGreedyJoyStick {
 
         char[] alphas = name.toCharArray();
 
-        ArrayList<Integer> posList = moveDirection(alphas);
-        int direction = posList.get(posList.size()-1);
-
-        posList.remove(posList.size()-1); // 방향 제거
-
-        if(posList.size() == alphas.length) {   // 받은 이름이 다 A일 때
-            return 0;
+        for(char ch : alphas) { // 알파벳 바꾸는 거는 미리 계산해주기
+            answer += moveAlpha(ch);
         }
 
-        if(posList.size() !=0) {
-            if(posList.get(0) == 0) {   // 시작 인덱스는 빼주기
-                posList.remove(0);
-            }
-        }
+        int minMove = alphas.length -1;     // 일반적인 경우 커서 이동을 다 해줘야함. (시작지점 ~> 끝)
 
-        if(direction ==0) { // 역방향일 때 내림차순 정렬
-            Collections.sort(posList, new Comparator<Integer>() {
-                @Override
-                public int compare(Integer o1, Integer o2) {
-                    return o2-o1;
-                }
-            });
-        } else {    // 순방향일 때 오름차순 정렬
-            Collections.sort(posList);
-        }
+        // A가 있는 경우 움직이는 경우의 수가 줄어들 수 있음
+        if(name.contains("A")) {
+            int cnt =1; // 첫 커서에서 무조건 움직일 거기 때문에 1부터 시작
 
-
-        int idx=0;
-        for(int i=0; i<alphas.length; i++) {
-            int changeCnt = moveAlpha(alphas[idx]);
-            answer += changeCnt;
-
-
-
-            if(direction ==0) { // 역방향
-                idx--;
-                if(idx < 0) {
-                    idx = alphas.length-1;
-                }
-            } else {    // 순방향
-                idx++;
-            }
-            answer++;   // 커서 이동 횟수 count
-
-            if(alphas.length-1 - i == posList.size() && endCheck(idx, posList, direction)) { // 남은 글자 수랑 A의 카운트 포지션이 같을 때
-                break;
-            } else {
-                if(!posList.isEmpty() && posList.get(0) == idx) {
-                    posList.remove(0);
-                }
-            }
-        }
-
-        return answer-1;
-    }
-
-    private static int decideDirection(char[] chArr, int start) {
-        int forward = 0;
-        int reverse = 0;
-
-        // 정방향 체크
-        for (int i = start + 1; i < chArr.length; i++) {
-            if (chArr[i] != 'A') {
-                break;
-            } else {
-                forward++;
-            }
-        }
-
-        // 역방향 체크
-        int idx = start;
-        for (int i = 0; i < chArr.length; i++) {
-            if (idx <=0) {
-                idx = (chArr.length) - 1;
-            }
-
-            if (chArr[idx--] != 'A') {
-                reverse++;
-            } else {
-                break;
-            }
-        }
-
-        System.out.println("정방향 : " + forward);
-        System.out.println("역방향 : " + reverse);
-
-        // 큰거 반대로 가야함
-        return forward < reverse ? 1 : 0;
-    }
-
-    private static boolean endCheck(int start, ArrayList<Integer> posList, int direction) {
-        boolean result =true;
-
-        // 0 ~> 역방향
-        if(direction ==0) {
-            for (int i = 0; i < posList.size(); i++) {
-//                System.out.println(start + "와 " +posList.get(i) + "비교 중");
-                if (start-- != posList.get(i)) {
-                    result = false;
+            //뒤에서 부터 세는 경우 (앞에 A가 연속으로 있을 때는 뒤에서부터 해주는게 이득
+            for(int i=1; i<alphas.length; i++) {
+                if(alphas[i] != 'A') {
+                    cnt = alphas.length -i;
                     break;
                 }
             }
-        } else {
-            // 1 ~> 순방향
-            for (int i = 0; i < posList.size(); i++) {
-                if (start++ != posList.get(i)) {
-                    result = false;
-                    break;
+
+            minMove = minMove > cnt ? cnt : minMove;
+            int idx =0;
+
+            while(idx < alphas.length) {
+                int endIdx = idx+1;  // 연속된 A가 끝나는 지점
+                if(alphas[idx] =='A') {
+                    while(endIdx < alphas.length && alphas[endIdx] == 'A') {    // 문자열 끝까지 A인 곳을 찾음
+                        endIdx++;
+                    }
+
+                    cnt = endIdx == alphas.length ? idx-1 : 1 + (idx-1)*2 + alphas.length-1-endIdx;   // 3번째 idx부터는 돌아오는데 걸리는 스텝 체크 ~> (idx-1)*2
+
+                    minMove = minMove > cnt ? cnt : minMove;
+
+                    idx = endIdx+1;
+                } else {    // A가 아닌지점이 나타나면
+                    idx++;  // 다음 인덱스 탐색
                 }
             }
         }
 
-        return result;
+        answer+=minMove;
+
+        return answer;
     }
 
-    private static ArrayList<Integer> moveDirection(char[] chArr) {
-        ArrayList<Integer> aPosLists = new ArrayList<>();
-        int leftCnt =0;
-        int rightCnt =0;
-        for(int i=0; i<chArr.length; i++) {
-            if(chArr[i] == 'A') {
-                aPosLists.add(i);
-            }
-        }
-
-        for(int idx : aPosLists) {
-            if(chArr.length%2 == 0) {   // 짝수일 때
-                if(idx < chArr.length/2) {
-//                    System.out.println(idx +"에서 카운트");
-                    leftCnt++;
-                } else {
-                    rightCnt++;
-                }
-            } else {  // 홀수일 때
-                if(idx <= chArr.length/2) {
-//                    System.out.println(idx +"에서 카운트");
-                    leftCnt++;
-                } else {
-                    rightCnt++;
-                }
-            }
-        }
-
-        if(leftCnt <= rightCnt) {
-            aPosLists.add(1);  // 마지막에 순방향 추가
-        } else {
-            aPosLists.add(0);  // 마지막에 역방향 추가
-        }
-        return aPosLists;
-    }
     private static int moveAlpha(char target) {
         return target <= 78 ? target - 'A' : ('Z'-target)+1;
     }
+
     public static void main(String[] args) {
         String name = "BBAABB";
         System.out.println(solution(name));
