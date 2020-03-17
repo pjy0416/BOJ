@@ -21,12 +21,13 @@ public class KitGreedyLifeBoat {
 
             if(origin != limit) {   // 가장 무거운 승객이 limit랑 같으면 계산할 필요 없음
                 for(int i=0; i <peopleList.size(); i++) {
-                    int target = peopleList.pollLast();
+                    int target = peopleList.poll();
 
-                    if(!isOverLimit(sum, target, limit-origin)) {
-                        sum+= target;
+                    if (!isOverLimit(sum, target, limit - origin)) {
+                        sum += target;
                     } else {
                         peopleList.offerFirst(target);
+                        break;
                     }
                 }
             }
