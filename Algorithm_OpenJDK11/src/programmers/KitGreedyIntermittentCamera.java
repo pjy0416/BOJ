@@ -1,67 +1,50 @@
 package programmers;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.PriorityQueue;
 
-public class KitGreedyIntermittentCamera {
+public class KitGreedyIntermittentCamera {  // 효율성 1,3 틀림
     private static int solution(int[][] routes) {
         PriorityQueue<CarRoute> routeQ = new PriorityQueue<>();
-        LinkedList<CarRoute> cameraList= new LinkedList<>();
-
-        int answer = 0;
+        ArrayList<CarRoute> cameraList = new ArrayList<>();
 
         for(int[] route : routes) {
-            routeQ.offer(new CarRoute(route[0],route[1]));
+            routeQ.offer(new CarRoute(route[0], route[1]));
         }
+
+        cameraList.add(routeQ.poll());
 
         while(!routeQ.isEmpty()) {
             CarRoute target = routeQ.poll();
-            if(cameraList.isEmpty()) {
-                cameraList.offer(target);
-            } else {
-                int size = cameraList.size();
-                boolean isChanged = false;
-                CarRoute origin;
-                for(int j=0; j<size; j++) {
-                    origin = cameraList.poll();
-//                System.out.println("Origin : " + origin.start + ", " + origin.end);
-//                System.out.println("Target : " + target.start + ", " + target.end);
-                    if(containSection(origin, target.start)) { // 앞의 최저가 새로운 구간에 포함이 될 때
-                        origin.start = target.start;
-                        origin.end = getEnd(origin.end, target.end);
-                        cameraList.offer(origin);    // 변경된 구간 다시 큐에 추가
-                        isChanged = true;
-//                        System.out.println("첫번째 변경 => " + origin.start + ", " + origin.end);
-                        break;
-                    } else if(containSection(target, origin.start)) {  // 새로운 구간의 최저가 앞의 구간에 포함될 때
-                        origin.end = getEnd(origin.end, target.end);
-                        cameraList.offer(origin);
-                        isChanged = true;
-//                        System.out.println("두번째 변경 => " + origin.start + ", " + origin.end);
-
-                        break;
-                    } else {
-                        cameraList.offer(origin);
-//                        System.out.println("변경 안됨");
-                    }
-                }
-                if(!isChanged) {
-                    cameraList.offer(target);
+//            System.out.println(route.start + " , " + route.end);
+            boolean isChanged = false;
+            for(int i=0; i<cameraList.size(); i++) {
+                CarRoute origin = cameraList.get(i);
+                if(isOverlap(origin, target)) {
+                    origin.start = target.start;
+                    origin.end = Math.min(origin.end, target.end);
+//                    System.out.println("겹쳐서 변경");
+                    cameraList.set(i, origin);
+                    isChanged = true;
+                    break;
                 }
             }
+            if(!isChanged) {
+                cameraList.add(target);
+            }
         }
-        answer = cameraList.size();
 
-        return answer;
+        /*for(CarRoute camera : cameraList) {
+            System.out.println(camera.start + " , " + camera.end);
+        }*/
+
+        return cameraList.size();
     }
 
-    private static boolean containSection(CarRoute origin, int target) {    // 겹치는 부분 찾기
-        return target >= origin.start && target <= origin.end ? true : false;
+    private static boolean isOverlap(CarRoute origin, CarRoute target) {
+        return target.start <= origin.end ? true : false;
     }
 
-    private static int getEnd(int origin, int target) { // 더 좁은 구간의 End 반환
-        return target <= origin ? target : origin;
-    }
     public static void main(String[] args) {
 //        int[][] routes = {{-20,15}, {-14,-5}, {-18,-13}, {-5,-3}};  //2
 //        int[][] routes = {{-2,-1}, {1,2},{-3,0}};         // 2
@@ -80,17 +63,15 @@ public class KitGreedyIntermittentCamera {
 class CarRoute implements Comparable<CarRoute> {
     int start;
     int end;
-    private int total;
 
     public CarRoute(int start, int end) {
         this.start = start;
         this.end = end;
-        this.total = Math.abs(end-start);
     }
 
     @Override
     public int compareTo(CarRoute o) {
-        return this.total > o.total ? 1 : -1;
+        return this.start > o.start ? 1 : -1;
     }
 }
 /*
