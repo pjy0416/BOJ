@@ -13,7 +13,7 @@ public class KitDPNCount {
         digit = getDigit(info[2]);  // 자리수를 다시 구해줌
 
         cntList = new ArrayList<>();
-        dfs(info[0]-1,0,N,number);  // 처음 들어갈 때, 0에서 연산이 시작됨으로 첫 수를 넣는 카운트 1 뺴줌
+        dfs(info[0],0,N,number);  // 처음 들어갈 때, 0에서 연산이 시작됨으로 첫 수를 넣는 카운트 1 뺴줌
         Collections.sort(cntList);
 
         int answer = cntList.get(0);
@@ -22,6 +22,7 @@ public class KitDPNCount {
     }
 
     private static void dfs(int cnt, int number, int N, int target) {
+        int increaseN = N;
         if(cnt >8) {
             return;
         }
@@ -29,11 +30,19 @@ public class KitDPNCount {
             cntList.add(cnt);
             return;
         }
-        dfs(cnt+1, calculator(0,number,N), N, target);
-        dfs(cnt+1, calculator(1,number,N), N, target);
-        dfs(cnt+1, calculator(2,number,N), N, target);
-        dfs(cnt+1, calculator(3,number,N), N, target);
-        dfs(cnt+2, calculator(4,number,N), N, target);
+
+        for(int i=1; i<=3; i++) {   //
+            dfs(cnt + i, calculator(0, number, increaseN), N, target);
+            dfs(cnt + i, calculator(1, number, increaseN), N, target);
+            dfs(cnt + i, calculator(2, number, increaseN), N, target);
+            dfs(cnt + i, calculator(3, number, increaseN), N, target);
+
+            increaseN = increaseNum(increaseN, N);
+        }
+    }
+
+    private static int increaseNum(int num, int N) {
+        return num*10+N;
     }
 
     private static int calculator(int cmd, int left, int right) {
@@ -51,9 +60,6 @@ public class KitDPNCount {
                 break;
             case 3: // 나눗셈
                 result = right ==0 ? 0 :left / right;
-                break;
-            case 4: // 자기 자신 두자릿수
-                result = left*10 + left;
                 break;
             default:
                 break;
