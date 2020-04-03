@@ -7,13 +7,8 @@ public class KitDPNCount {
     static ArrayList<Integer> cntList;
 
     private static int solution(int N, int number) {
-        int digit = getDigit(number);   // Digit 범위 => 1 ~ 5
-        int[] info = optimaCondition(digit, N, number); // 0 : cnt, 1: div, 2: mod  메소드를 돌고나면 1 Idx는 필요 없어지고 2자리 수 이하가 mod에 남음
-
-        digit = getDigit(info[2]);  // 자리수를 다시 구해줌
-
         cntList = new ArrayList<>();
-        dfs(info[0],0,N,number);  // 처음 들어갈 때, 0에서 연산이 시작됨으로 첫 수를 넣는 카운트 1 뺴줌
+        dfs(0, 0, N, number);
         Collections.sort(cntList);
 
         int answer = cntList.get(0);
@@ -22,27 +17,28 @@ public class KitDPNCount {
     }
 
     private static void dfs(int cnt, int number, int N, int target) {
-        int increaseN = N;
-        if(cnt >8) {
+        if(cnt >8) {    // Breaking Point
             return;
         }
-        if(number == target) {
+        if(number == target) {  // 숫자가 만들어질 때 count 입력
             cntList.add(cnt);
             return;
         }
 
-        for(int i=1; i<=3; i++) {   //
-            dfs(cnt + i, calculator(0, number, increaseN), N, target);
-            dfs(cnt + i, calculator(1, number, increaseN), N, target);
-            dfs(cnt + i, calculator(2, number, increaseN), N, target);
-            dfs(cnt + i, calculator(3, number, increaseN), N, target);
-
-            increaseN = increaseNum(increaseN, N);
+        for(int i=1; i<=8-cnt; i++) {   // N, NN, NNN, ... 사칙연산 Looping
+            dfs(cnt + i, calculator(0, number, increaseNum(i,N)), N, target);
+            dfs(cnt + i, calculator(1, number, increaseNum(i,N)), N, target);
+            dfs(cnt + i, calculator(2, number, increaseNum(i,N)), N, target);
+            dfs(cnt + i, calculator(3, number, increaseNum(i,N)), N, target);
         }
     }
 
-    private static int increaseNum(int num, int N) {
-        return num*10+N;
+    private static int increaseNum(int digit, int N) {  // 입력된 자릿수 만큼 digit개로 이루어진 N을 반환
+        int result = 0;
+        for(int i=0; i<digit; i++) {
+            result += Math.pow(10,i)*N;
+        }
+        return result;
     }
 
     private static int calculator(int cmd, int left, int right) {
@@ -66,34 +62,6 @@ public class KitDPNCount {
         }
 
         return result;
-    }
-
-    private static int getDigit(int num) {  // 자리 수 구하기
-        int cnt =1;
-
-        while(num /10 !=0) {
-            cnt++;
-            num /=10;
-        }
-        return cnt;
-    }
-
-    private static int[] optimaCondition(int digit, int N, int num) {   // 속도 향상을 위해 최적화 시키기
-        int[] info = {0,0,num};   // 0 : Cnt , 1 : div, 2 : mod
-
-        for(int i=0; i<digit; i++) {
-            int tmp =0;
-            for(int j=i; j<digit; j++) {
-                tmp +=Math.pow(10, j) * N;
-            }
-            while(num/tmp !=0) {
-                info[0] += info[1]*(digit-i);
-                info[1] = num/tmp;
-                info[2] = num%tmp;
-            }
-        }
-
-        return info;
     }
 
     public static void main(String[] args) {
