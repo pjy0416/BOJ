@@ -1,5 +1,7 @@
 package programmers;
 
+import java.util.Stack;
+
 public class KitBPTileDeco {
     private static long fibonacci(Long N) {
         if(N ==1) {
@@ -13,12 +15,25 @@ public class KitBPTileDeco {
 
     private static long solution(int N) {
         long answer = 0;
+        Stack<Long> fib = new Stack<>();
 
         if(N ==1) {
             return 4;   // 1*4
         }
-        answer = fibonacci(Long.valueOf(N))*2 + fibonacci(Long.valueOf(N-1))*2;
 
+        fib.add(Long.valueOf(1));
+        fib.add(Long.valueOf(2));
+
+        for(int i=2; i<N; i++) {
+            long prev = fib.pop();
+            long past = fib.pop();
+            long now = prev + past;
+
+            fib.add(prev);
+            fib.add(now);
+        }
+//        answer = fibonacci(Long.valueOf(N))*2 + fibonacci(Long.valueOf(N-1))*2;
+        answer = fib.pop()*2 + fib.pop()*2;
         return answer;
     }
 
