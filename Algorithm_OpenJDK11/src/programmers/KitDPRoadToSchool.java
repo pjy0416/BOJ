@@ -1,28 +1,26 @@
 package programmers;
 
 public class KitDPRoadToSchool {
-    static int cnt;
     private static int solution(int m, int n, int[][] puddles) {
-        cnt =0;
         int[][] map = new int[n+1][m+1];
-        for(int y=1; y<=n; y++) {
+        for(int y=1; y<=n; y++) {   // map 생성
             for(int x=1; x<=m; x++) {
                 map[y][x] =1;
             }
         }
-
-        for(int[] pos : puddles) {
+        for(int[] pos : puddles) {  // 웅덩이는 0으로 변환
             map[pos[1]][pos[0]] = 0;
         }
 
-        /*for(int[] y : map) {
-            for(int x : y) {
-                System.out.print(x + " ");
+        map[0][1] =1;
+        for(int y=1; y<=n; y++) {   // map 생성
+            for(int x=1; x<=m; x++) {
+                if(map[y-1][x] ==0 && map[y][x-1] ==0) {
+                    map[y][x] =0;
+                }
             }
-            System.out.println();
-        }*/
+        }
 
-//        dp(m,n,1,1,puddleMap);
         return getResult(m,n, map);
     }
 
@@ -41,21 +39,6 @@ public class KitDPRoadToSchool {
             System.out.println();
         }*/
         return map[n][m];
-    }
-
-    private static void dp(int m, int n, int x, int y, int[][] puddleMap) {
-        if(x == m && y == n) {
-            cnt++;
-            return;
-        }
-        if(x >m || y >n) {  // 범위 넘어가면 리턴
-            return;
-        }
-        if(puddleMap[y][x] == 1) {  // 웅덩이면 종료
-            return;
-        }
-        dp(m,n, x+1, y, puddleMap);
-        dp(m,n,x,y+1, puddleMap);
     }
 
     public static void main(String[] args) {
