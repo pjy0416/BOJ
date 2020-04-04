@@ -1,37 +1,65 @@
 package programmers;
 
 public class KitDPCardGame {
-    static int score;
     private static int solution(int[] left, int[] right) {
-        score =0;
-        dp(left,right,0,0,0);
+        int answer =0;
 
-        return score;
-    }
-
-    private static void dp(int[] left, int[] right, int leftIdx, int rightIdx, int sum) {
-        if(leftIdx == left.length || rightIdx == right.length) {
-            score = score < sum ? sum : score;
-            return;
+        for(int num : right) {
+            answer += num;
         }
 
-//        1. 언제든지 왼쪽 카드만 통에 버릴 수도 있고 왼쪽 카드와 오른쪽 카드를 둘 다 통에 버릴 수도 있다. 이때 얻는 점수는 없다.
-//        2. 오른쪽 카드에 적힌 수가 왼쪽 카드에 적힌 수보다 작은 경우에는 오른쪽 카드만 통에 버릴 수도 있다.
-//        오른쪽 카드만 버리는 경우에는 오른쪽 카드에 적힌 수만큼 점수를 얻는다.
-        // 2번 조건
-        if(left[leftIdx] > right[rightIdx]) {
-            dp(left,right,leftIdx,rightIdx+1, sum+right[rightIdx]);
+        if(!isMaxLeft(left, right)) {   // 맥스까지 주구장창 다 버리지 못할 경우
+            int leftIdx =0;
+            int sum =0;
+            // 둘 다 버리는 경우를 카운트 해줘야함
+
+            for(int i=0; i<right.length; i++) {
+                if(leftIdx >= left.length) {
+                    break;
+                }
+                leftIdx = getBiggerLeftIDX(left, leftIdx, right[i]);
+                if(leftIdx ==-1) {  // 더 큰놈이 없으니까 둘 다 버려야함
+                    leftIdx++;
+                    sum += right[i];    // 버린거 빼주려면
+                }
+                //  Left만 인덱스까지 버림
+            }
+            answer -= sum;
         }
-        // 1번 조건
-        // 1-1
-        dp(left,right,leftIdx+1,rightIdx,sum);
-        // 1-2
-        dp(left,right,leftIdx+1,rightIdx+1,sum);
+
+        return answer;
     }
+
+    private static boolean isMaxLeft(int[] left, int[] right) {
+        int leftMax =0;
+        int rightMax =0;
+
+        for(int num : left) {
+            leftMax = num > leftMax ? num : leftMax;
+        }
+
+        for(int num : right) {
+            rightMax = num > rightMax ? num : rightMax;
+        }
+
+        return leftMax > rightMax ? true : false;
+    }
+
+    private static int getBiggerLeftIDX(int[] left, int start, int right) {
+        for(int i=start; i<left.length; i++) {
+            if(left[i] >right) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
 
     public static void main(String[] args) {
         int[] left = {3,2,5};
         int[] right = {2,4,1};
+
+//        int[] left = {3,5,1}, right = {4,7,1};
 
         System.out.println(solution(left,right));
     }
