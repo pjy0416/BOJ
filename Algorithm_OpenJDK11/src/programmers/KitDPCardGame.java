@@ -14,15 +14,16 @@ public class KitDPCardGame {
             // 둘 다 버리는 경우를 카운트 해줘야함
 
             for(int i=0; i<right.length; i++) {
-                if(leftIdx >= left.length) {
+                /*if(leftIdx >= left.length) { // 이 경우가 없다고 함
                     break;
-                }
-                leftIdx = getBiggerLeftIDX(left, leftIdx, right[i]);
-                if(leftIdx ==-1) {  // 더 큰놈이 없으니까 둘 다 버려야함
+                }*/
+                int tmp = getBiggerLeftIDX(left, leftIdx, right[i]);
+                if(tmp ==-1) {  // 더 큰놈이 없으니까 둘 다 버려야함
                     leftIdx++;
                     sum += right[i];    // 버린거 빼주려면
+                } else { //  Left만 인덱스까지 버림
+                    leftIdx = tmp;
                 }
-                //  Left만 인덱스까지 버림
             }
             answer -= sum;
         }
