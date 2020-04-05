@@ -116,19 +116,50 @@ class SnapShot implements Comparable<SnapShot>{
 
     @Override
     public int compareTo(SnapShot o) {
-        int originLen = this.name.length();
-        int targetLen = o.name.length();
+        String originStr = this.name.replaceAll("[0-9]","");
+        String targetStr = o.name.replaceAll("[0-9]", "");
+        String originNum = this.name.replaceAll("[^0-9]","");
+        String targetNum = o.name.replaceAll("[^0-9]", "");
+
+        int originLen = originStr.length();
+        int targetLen = targetStr.length();
 
         int min = Math.min(originLen, targetLen);
 
         for(int i=0; i<min; i++) {
-            if(this.name.charAt(i) > o.name.charAt(i)) {
-                return 1;
-            } else if(this.name.charAt(i) < o.name.charAt(i)) {
-                return -1;
+            char originCh = originStr.charAt(i);
+            int originCategory = charOrder(originCh);
+            char targetCh = targetStr.charAt(i);
+            int targetCategory = charOrder(targetCh);
+
+            if(originCategory == targetCategory) {  // 같으면 대소 비교
+                if(originCh > targetCh) {
+                    return 1;
+                }
+                if(originCh < targetCh) {
+                    return -1;
+                }
+            } else {
+                return originCategory > targetCategory ? 1 : -1;
             }
         }
-        return originLen == min ? 1 : -1;
+
+        if(originLen == targetLen) {
+            return Integer.parseInt(originNum) > Integer.parseInt(targetNum) ? 1 : -1;
+        } else {
+            return originLen > targetLen ? 1 : -1;
+        }
+    }
+
+    private int charOrder(char ch) {
+        if(ch >=97 && ch <= 122) {   // 소문자
+            return 1;
+        } else if(ch >=65 && ch <= 90) {
+            return 2;
+        } else if(ch >=48 && ch <=57) {
+            return 3;
+        }
+        return 4;   // 특수 문자겠지만 주어지는 경우가 없을듯
     }
 }
 
