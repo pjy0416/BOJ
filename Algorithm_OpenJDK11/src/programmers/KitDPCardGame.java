@@ -2,63 +2,32 @@ package programmers;
 
 public class KitDPCardGame {
     private static int solution(int[] left, int[] right) {
-        int answer =0;
+        int [][] bestScores = new int[left.length+1][right.length+1];
 
-        for(int num : right) {
-            answer += num;
-        }
-
-        if(!isMaxLeft(left, right)) {   // 맥스까지 주구장창 다 버리지 못할 경우
-            int leftIdx =0;
-            int sum =0;
-            // 둘 다 버리는 경우를 카운트 해줘야함
-
-            for(int i=0; i<right.length; i++) {
-                /*if(leftIdx >= left.length) { // 이 경우가 없다고 함
-                    break;
-                }*/
-                int tmp = getBiggerLeftIDX(left, leftIdx, right[i]);
-                if(tmp ==-1) {  // 더 큰놈이 없으니까 둘 다 버려야함
-                    leftIdx++;
-                    sum += right[i];    // 버린거 빼주려면
-                } else { //  Left만 인덱스까지 버림
-                    leftIdx = tmp;
+        for(int l = left.length-1; l>=0; l--) {
+            for(int r = right.length-1; r>=0; r--) {
+                if(left[l] > right[r]) {
+                    bestScores[l][r] = bestScores[l][r+1] + right[r];
+                } else {
+                    bestScores[l][r] = Math.max(bestScores[l+1][r], bestScores[l+1][r+1]);
                 }
             }
-            answer -= sum;
         }
-
-        return answer;
-    }
-
-    private static boolean isMaxLeft(int[] left, int[] right) {
-        int leftMax =0;
-        int rightMax =0;
-
-        for(int num : left) {
-            leftMax = num > leftMax ? num : leftMax;
-        }
-
-        for(int num : right) {
-            rightMax = num > rightMax ? num : rightMax;
-        }
-
-        return leftMax > rightMax ? true : false;
-    }
-
-    private static int getBiggerLeftIDX(int[] left, int start, int right) {
-        for(int i=start; i<left.length; i++) {
-            if(left[i] >right) {
-                return i;
+        for (int[] arr : bestScores) {
+            for(int num : arr) {
+                System.out.print(num + " ");
             }
+            System.out.println();
         }
-        return -1;
-    }
 
+        return bestScores[0][0];
+    }
 
     public static void main(String[] args) {
         int[] left = {3,2,5};
         int[] right = {2,4,1};
+//        int[] left = {1, 1, 1, 1, 3};
+//        int[] right = {2, 1, 3, 1, 1};
 
 //        int[] left = {3,5,1}, right = {4,7,1};
 
