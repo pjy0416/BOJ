@@ -3,13 +3,29 @@ package programmers;
 public class KitDPThievery {
     private static int solution(int[] money) {
         //이 마을에 있는 집은 3개 이상 1,000,000개 이하입니다.
-        int[] answer = new int[money.length];
-        answer[0] = money[0];
-        answer[1] = money[1];
+        int len = money.length;
+        int[] answer = new int[len+1];
 
-        for(int i=2; i<money.length; i++) {
-            answer[i] += answer[i-2] + money[i] > answer[i-1] ? answer[i-2] + money[i] : answer[i-1];
+        answer[0] = money[len-1];
+        answer[1] = money[0];
+        answer[2] = money[1] + answer[0];
+
+        for (int i = 3; i <= len; i++) {
+            answer[i] = answer[i-2] + money[i-1] > answer[i-1] ? answer[i-2] + money[i-1] : answer[i-1];
         }
+
+/*
+        for(int num : answer) {
+            System.out.println(num);
+        }
+*/
+
+        /*if(money[0] < money[money.length-1]) {
+            answer[money.length-1] -= money[0];
+        } else {
+            answer[money.length-1] -= money[money.length-1];
+        }
+*/
         return answer[money.length-1];
     }
 
