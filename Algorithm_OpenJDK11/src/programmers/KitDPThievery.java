@@ -10,7 +10,7 @@ public class KitDPThievery {
         dp1[1] = money[0];  // 두번째 돈은 포함을 안할거니까 첫번째 애 입력
         dp2[1] = money[1];  // 두번째 돈 포함
 
-        for (int i = 2; i <len; i++) {  // 돈은 하나 당겨서 생각
+        for (int i = 2; i <len; i++) {
             dp1[i] = Math.max(dp1[i-2]+money[i], dp1[i-1]);
             dp2[i] = Math.max(dp2[i-2]+money[i], dp2[i-1]);
         }
