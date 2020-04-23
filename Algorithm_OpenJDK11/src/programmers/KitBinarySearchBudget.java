@@ -3,26 +3,58 @@ package programmers;
 import java.util.Arrays;
 
 public class KitBinarySearchBudget {
-    private static int solution(int[] budgets, int M) {
-        int answer = 0;
-
+    private static int solution(int[] budgets, int M) { // 예산안 안에 들어오면 최대값 리턴, 아니면 이분 탐색
         Arrays.sort(budgets);
-        for(int i=0; i< budgets.length; i++) {
-            int avg = M/(budgets.length-i); // 남은 금액을 남은 도시로 나눈 평균
-            if(budgets[i] >avg) {   // 책정된 예산이 avg보다 큰 경우
-                answer = M/(budgets.length-i);  // 남은 금액으로 상한선 조정
+        return isInBudget(budgets,M) ? budgets[budgets.length-1] : binarySearch(budgets, M, budgets[budgets.length-1]);
+    }
+
+    private static boolean isInBudget(int[] budgets, int M) {
+        long sum =0;
+        for(int budget : budgets) {
+            sum += budget;
+        }
+        return sum <= M ? true : false;
+    }
+
+    private static int binarySearch(int[] budgets, int M, int max) {
+        int left =0;
+        int right = max;
+
+        while(left < right) {
+            int mid = (left+right)/2;
+            int total = getTotal(budgets, mid);     // 상한선을 mid로 더한 총 예산 구하기
+            if(total > M) { // 주어진 예산보다 더 클 경우
+                right = mid;    // 예산의 상한선 조정
+            } else {    // 예산보다 작거나 같을 때
+                left = mid+1;   // 하한선을 조정
+            }
+
+            if(left == right) { // 상한선과 하한선이 같을 때 left-1 리턴
+                left -=1;
                 break;
-            } else {
-                M -= budgets[i];    // 예산 통과되는 도시의 예산을 빼줌
             }
         }
 
-        return answer == 0 ? budgets[budgets.length-1] : answer;    // answer가 0이면 모든 예산이 통과되는 거니까 최대 예산 도시의 액수 리턴
+        return left;
+    }
+
+    private static int getTotal(int[] budgets, int mid) {
+        int result =0;
+        for(int budget : budgets) {
+            result += budget > mid ? mid : budget;
+        }
+        return result;
     }
 
     public static void main(String[] args) {
-        int[] budget = {1, 1, 1, 1, 1};
-        int M = 5;
+//        int[] budget = {120, 110, 140, 150};
+//        int M = 485;
+        int[] budget = {120, 110, 140, 150, 500};
+        int M = 685;
+//        int[] budget = {1, 1, 1, 1};
+//        int M = 4;
+//        int[] budget = {120, 110, 140, 150};
+//        int M = 4000;
 
         System.out.println(solution(budget, M));
     }
