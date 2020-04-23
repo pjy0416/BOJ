@@ -3,6 +3,24 @@ package programmers;
 import java.util.Arrays;
 
 public class KitBinarySearchBudget {
+    /*private static int solution(int[] budgets, int M) {   // 풀이 1
+        int answer = 0;
+
+        Arrays.sort(budgets);
+        for(int i=0; i< budgets.length; i++) {
+            int avg = M/(budgets.length-i); // 남은 금액을 남은 도시로 나눈 평균
+            if(budgets[i] >avg) {   // 책정된 예산이 avg보다 큰 경우
+                answer = M/(budgets.length-i);  // 남은 금액으로 상한선 조정
+                break;
+            } else {
+                M -= budgets[i];    // 예산 통과되는 도시의 예산을 빼줌
+            }
+        }
+
+        return answer == 0 ? budgets[budgets.length-1] : answer;    // answer가 0이면 모든 예산이 통과되는 거니까 최대 예산 도시의 액수 리턴
+    }*/
+
+    //풀이 2  - by Binary search
     private static int solution(int[] budgets, int M) { // 예산안 안에 들어오면 최대값 리턴, 아니면 이분 탐색
         Arrays.sort(budgets);
         return isInBudget(budgets,M) ? budgets[budgets.length-1] : binarySearch(budgets, M, budgets[budgets.length-1]);
