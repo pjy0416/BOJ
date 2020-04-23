@@ -10,20 +10,19 @@ public class KitBinarySearchBudget {
         for(int i=0; i< budgets.length; i++) {
             int avg = M/(budgets.length-i); // 남은 금액을 남은 도시로 나눈 평균
             if(budgets[i] >avg) {   // 책정된 예산이 avg보다 큰 경우
-                answer = M/(budgets.length-i);  // 남은 도시들에 대해
+                answer = M/(budgets.length-i);  // 남은 금액으로 상한선 조정
                 break;
             } else {
-                M -= budgets[i];
+                M -= budgets[i];    // 예산 통과되는 도시의 예산을 빼줌
             }
         }
 
-        return answer;
+        return answer == 0 ? budgets[budgets.length-1] : answer;    // answer가 0이면 모든 예산이 통과되는 거니까 최대 예산 도시의 액수 리턴
     }
 
     public static void main(String[] args) {
         int[] budget = {1, 1, 1, 1, 1};
         int M = 5;
-        // 80이 남은 수, avg = 204
 
         System.out.println(solution(budget, M));
     }
