@@ -12,7 +12,7 @@ public class KitGraphFarthestNode {
         return search(nodes);
     }
 
-    private static LinkedList<Integer>[] makeNode(int[][] edge, LinkedList<Integer>[] nodes) {
+    private static LinkedList<Integer>[] makeNode(int[][] edge, LinkedList<Integer>[] nodes) {  // node를 이어준다.
         for(int[] info : edge) {
             nodes[info[0]-1].offer(info[1]-1);    // 1~n 까지의 수 => 0~n-1까지 idx
             nodes[info[1]-1].offer(info[0]-1);    // 역방향은 이어주지 말자
@@ -20,7 +20,7 @@ public class KitGraphFarthestNode {
         return nodes;
     }
 
-    private static LinkedList<Integer>[] inItList(int n) {
+    private static LinkedList<Integer>[] inItList(int n) {  // node를 만들어준다.
         LinkedList<Integer>[] result= new LinkedList[n];
         for(int i=0; i<n; i++) {
             result[i] = new LinkedList<>();
@@ -28,7 +28,7 @@ public class KitGraphFarthestNode {
         return result;
     }
 
-    private static int search(LinkedList<Integer>[] nodes) {
+    private static int search(LinkedList<Integer>[] nodes) {    // 최단거리 node 찾아서 갯수 세는 메소드
         PriorityQueue<MyNode> orderPQ = new PriorityQueue<>();
         orderPQ.offer(new MyNode(0,0));
         int[] visit = new int[nodes.length];
