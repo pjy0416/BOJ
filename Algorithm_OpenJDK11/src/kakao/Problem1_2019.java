@@ -4,18 +4,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-public class Problem1_2019 {    // 76.0 / 100.0 점
-    static int findNum(int cnt, int div) {
-        int num =1;
-
-        while (cnt % 10 == 0) {
-            num++;
-            cnt /= 10;
-        }
-        num += div;
-
-//        System.out.println( cnt+ " <<-카운트 횟수 " + div*cnt+ " 중복된 길이" + div + " 에서 표현되는 숫자 길이" + num);
-        return num;
+public class Problem1_2019 {
+    static int reduceLen(int cnt, int div) {    // 글자 줄어든 만큼 반환
+        return div*cnt - (String.valueOf(cnt).length() + div);  // 원래 길이 - 바뀐 길이
     }
 
     static int solution(String s) {
@@ -30,36 +21,34 @@ public class Problem1_2019 {    // 76.0 / 100.0 점
         }
 
         for(int div =len/2; div >0; div--) {     // 문자열 자를 길이만큼 절반 ~ 1까지
-//            System.out.println("================ " + div + "==================");
             answer = len;   // 답 초기화
             String tmp = s.substring(0, div);   // 첫번째 인덱스부터 길이만큼 자르기
 
-            for(int times=1; times < len/div ; times++) {   // 100잔데 2개로 자르면 50개를 비교해야하기 때문.
-                String dest = s.substring(div*times, div + div*times);  // next 문자열
+            for (int times = 1; times <= len / div; times++) {   // 100잔데 2개로 자르면 50개를 비교해야하기 때문.
+                if(div*(times+1) > len) {   // 최대 글자 넘어가는 경우는 check 안함
+                    break;
+                }
+                String dest = s.substring(div * times, div + div * times);  // next 문자열
 
-                if(tmp.equals(dest)) {  // 전에랑 글자 같아?
+                if (tmp.equals(dest)) {  // 전에랑 글자 같아?
                     cnt++;              // 횟수 증가
                 } else {    // 여러번 중복되는 것 체크
-                    if(cnt !=1) {   // 현재까지 중복된 갯수만큼 글자 줄여주기
-                        int reduceChar = div*cnt - findNum(cnt, div);   // 중복된 글자 수 - 표현될 글자 수
-                        answer -= reduceChar ;   // 줄어든 글자 수 만큼 빼주기
-                        cnt =1;         // 중복 체크 횟수 초기화
+                    if (cnt != 1) {   // 현재까지 중복된 갯수만큼 글자 줄여주기
+                        answer -= reduceLen(cnt,div);   // 줄어든 글자 수 만큼 빼주기
+                        cnt = 1;         // 중복 체크 횟수 초기화
                     }
                 }
+
                 tmp = dest; // 비교 글자 바꾸기
             }
 
-            if(cnt !=1) { // 검사 끝나고 잔여 횟수가 남아있으면
-                int reduceChar = (cnt*div) - findNum(cnt, div);   // 중복된 글자 수 - 표현될 글자 수
-                answer -= reduceChar;
+            if (cnt != 1) { // 검사 끝나고 잔여 횟수가 남아있으면
+                answer -= reduceLen(cnt,div);   // 줄어든 글자 수 만큼 빼주기
             }
 
             min = min > answer ? answer : min;
-            cnt =1;
-//            System.out.println(answer);
-//            System.out.println("===========================================");
+            cnt = 1;
         }
-
         answer = min;
 
         return answer;
@@ -70,7 +59,6 @@ public class Problem1_2019 {    // 76.0 / 100.0 점
 
         String inStr = br.readLine();
         System.out.println(solution(inStr));
-
         br.close();
     }
 }
