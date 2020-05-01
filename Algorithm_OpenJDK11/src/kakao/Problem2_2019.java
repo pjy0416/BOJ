@@ -1,6 +1,6 @@
 package kakao;
 
-public class Problem2_2019 {    
+public class Problem2_2019 {
 
     static String go(String w){
         if(w.equals("")) {
