@@ -1,41 +1,47 @@
 package kakao;
 
+import java.util.HashMap;
+
 public class SearchLyrics {
     private static int[] solution(String[] words, String[] queries) {
         int[] answer = new int[queries.length];
-        
+        Trie trie = getTrie(words); // 정방향 Trie
+        Trie reverseTrie = getReverseTrie(words);   // 역방향 Trie
+
         for(int i=0; i<answer.length; i++) {
-            answer[i] = getCount(words, queries[i]);
+            answer[i] = getCount(trie, reverseTrie, queries[i]);
         }
 
         return answer;
     }
 
-    private static int getCount(String[] words, String query) {
+    private static int getCount(Trie trie, Trie reverseTrie, String query) {    // query 에 해당하는 문자열 cnt 반환
         int cnt =0;
-
-        for(String word : words) {
-            if(rightWord(word, query)) {
-                cnt++;
-            }
+        if(query.charAt(0) == '?') {    // reverse 트리에서 탐색
+            StringBuffer sb = new StringBuffer(query);
+            cnt += reverseTrie.search(sb.reverse().toString());
+        } else {    // trie 탐색
+            cnt+= trie.search(query);
         }
         return cnt;
     }
 
-    private static boolean rightWord(String word, String query) {
-        if(word.length() != query.length()) {   // 길이가 다르면 X
-            return false;
+    private static Trie getTrie(String[] words) {   // 정방향 트리 초기화 및 반환
+        Trie trie = new Trie();
+        for(String word : words) {
+            trie.insert(word);
         }
-        for(int idx =0; idx < word.length(); idx++) {
-            if(query.charAt(idx) != '?') {
-                if(word.charAt(idx) != query.charAt(idx)) { // 다른 글자면 break;
-                    return false;
-                }
-            }
-        }
-        return true;
+        return trie;
     }
 
+    private static Trie getReverseTrie(String[] words) {    // 역방향 트리 초기화 및 반환
+        Trie trie = new Trie();
+        for(String word : words) {
+            StringBuffer sb = new StringBuffer(word);
+            trie.insert(sb.reverse().toString());
+        }
+        return trie;
+    }
 
     public static void main(String[] args) {
         String[] words ={"frodo", "front", "frost", "frozen", "frame", "kakao"};
@@ -45,6 +51,91 @@ public class SearchLyrics {
         for(int num : result) {
             System.out.println(num);
         }
+    }
+}
+
+class Node {    // Node class
+    char ch;
+    HashMap<Character, Node> children;          // 자식 노드
+    HashMap<Integer, Integer> childrenCnt;      // 와일드카드 ?를 위해, key에는 query의 길이, value에는 갯수가 들어감
+    boolean isEnd;                              // 끝인지 판별하는 boolean 이지만 여기서는 필요 없을 것 같기도
+
+    public Node() {
+        this.children = new HashMap<>();
+        this.childrenCnt = new HashMap<>();
+    }
+    public Node(char ch) {
+        this.children = new HashMap<>();
+        this.childrenCnt = new HashMap<>();
+        this.ch = ch;
+    }
+}
+
+class Trie {
+    private Node root;
+
+    public Trie() {
+        root = new Node();
+    }
+
+    public void insert(String word) {   // word 삽입
+        HashMap<Character, Node> children = root.children;
+        updateChildrenCnt(root, word.length()); // query 의 모든 글자가 ? 로 이루어진 경우를 위해, root에도 저장
+
+        for(int i=0; i<word.length(); i++) {
+            char ch = word.charAt(i);
+            Node tmp;
+            if(children.containsKey(ch)) {  //이미 있으면, 들어가기
+                tmp = children.get(ch);
+                children = tmp.children;
+            } else {    // 없으면 만들어서 삽입 후, children 으로 들어감
+                tmp = new Node(ch);
+                children.put(ch, tmp);
+                children = tmp.children;
+            }
+            updateChildrenCnt(tmp, word.length());  //  각 depth 마다 word(query)의 length 만큼 가진 갯수 저장
+            if(i == word.length()-1) {
+                tmp.isEnd = true;
+            }
+        }
+    }
+    public void updateChildrenCnt(Node node, int len) { // length 갯수 저장
+        if(node.childrenCnt.containsKey(len)) {
+            node.childrenCnt.replace(len, node.childrenCnt.get(len)+1);
+        } else {
+            node.childrenCnt.put(len, 1);
+        }
+    }
+
+    public int search(String word) {
+        if(word.replaceAll("[?]","").length() ==0) {    // 모든 문자가 ?로 이루어진 경우
+            if(root.childrenCnt.containsKey(word.length())) {   // 글자 수 만큼 있으면
+                return root.childrenCnt.get((word.length()));   // 갯수 반환
+            } else {    // 없으면
+                return 0;   //0 반환
+            }
+        }
+        HashMap<Character, Node> children = root.children;
+        Node tmp = null;
+
+        int cnt = 0;
+        for (int i = 0; i < word.length(); i++) {
+            char ch = word.charAt(i);
+            if (ch != '?') {    // ?가 아닌 경우
+                if (children.containsKey(ch)) {  // ch가 있으면
+                    tmp = children.get(ch);     // 들어가자
+                    children = tmp.children;
+                } else {    // 다른 글자면
+                    return 0;   // 맞는 조건 없음
+                }
+            } else {    // ?를 만났으면
+                if (tmp.childrenCnt.containsKey(word.length())) {   // query 의 갯수 만큼 존재하는 cnt 반환
+                    cnt = tmp.childrenCnt.get(word.length());
+                    break;
+                }
+            }
+        }
+        return cnt;
     }
 }
 
