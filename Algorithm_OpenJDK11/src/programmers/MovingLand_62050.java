@@ -13,10 +13,10 @@ public class MovingLand_62050 {
         initVisit(land.length);
         int group =1;
 
-        //1st grouping
+        //grouping
         for(int y=0; y<land.length; y++) {
             for(int x=0; x<land.length; x++) {
-                if(visit[y][x] ==0) {
+                if(visit[y][x] ==0) {   //구역이 없는 경우
                     grouping(new Pos(x,y),land,height,group++);
                 }
             }
@@ -56,7 +56,7 @@ public class MovingLand_62050 {
         for(int i=0; i<4; i++) {
             int x = originX + dx[i];
             int y = originY + dy[i];
-            if(isInArea(x,y,land.length)) {
+            if(isInArea(x,y,land.length)) { // out of idx 방지
                 if(visit[originY][originX] != visit[y][x]) { // 다른 그룹이면
                     ladderQueue.offer(new Node(visit[originY][originX], visit[y][x], Math.abs(land[y][x] - land[originY][originX])));
                 }
@@ -67,23 +67,23 @@ public class MovingLand_62050 {
     private static void grouping(Pos pos, int[][] land, int height, int group) {
         Queue<Pos> queue = new LinkedList<>();
         queue.offer(pos);
-
+        visit[pos.y][pos.x] = group;
         while(!queue.isEmpty()) {
             Pos tmp = queue.poll();
-            visit[tmp.y][tmp.x] =group;
             for(int i=0; i<4; i++) {
                 int x = tmp.x+dx[i];
                 int y = tmp.y+dy[i];
                 if(isInArea(x,y, land.length)) {
                     if(visit[y][x] ==0 && canMove(land[tmp.y][tmp.x], land[y][x], height)) {
                         queue.offer(new Pos(x,y));
+                        visit[y][x] = group;
                     }
                 }
             }
         }
     }
 
-    private static boolean canMove(int num1, int num2, int height) {
+    private static boolean canMove(int num1, int num2, int height) {    // move without ladder
         return Math.abs(num1-num2) <= height ? true : false;
     }
 
