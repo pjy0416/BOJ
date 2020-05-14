@@ -50,10 +50,11 @@ public class ThanksgivingTraffic_17676 {
         for(String line : lines) {
             // 0 : 년월일, 1 : 완료 시간, 2 : 걸린 시간
             String[] infoArr = line.split(" ");
-            setResultMap(getTime(infoArr[1]), getProcessTime(infoArr[2]), resultMap);
+//            setResultMap(getTime(infoArr[1]), getProcessTime(infoArr[2]), resultMap);
         }
         return resultMap;
     }
+
     private static HashMap<Integer, HashMap> setResultMap(double endTime, double processTime, HashMap<Integer, HashMap> map) {
         double startTime = endTime - processTime;
 
@@ -99,7 +100,7 @@ public class ThanksgivingTraffic_17676 {
         return map;
     }
 
-    private static double getTime(String timeStr) {
+    /*private static double getTime(String timeStr) {
         double result =0;
         String[] strArr = timeStr.split(":");
         result += Double.parseDouble(strArr[0])*60*60; // 시간을 초로 환산
@@ -107,10 +108,39 @@ public class ThanksgivingTraffic_17676 {
         result += Double.parseDouble(strArr[2]);
 
         return result;
-    }
+    }*/
 
     private static double getProcessTime(String timeStr) {
         return Double.parseDouble(timeStr.replaceAll("s",""));
+    }
+}
+
+class MyLog {
+    String endStr;
+    int taskTime;
+    long startTime;
+    long endTime;
+
+    public MyLog(String endStr, double taskTime) {
+        this.endStr = endStr;
+        this.taskTime = (int)(taskTime*1000);
+        this.endTime = getTime(endStr);
+        setStartTime();
+    }
+
+
+    private void setStartTime() {
+        this.startTime = endTime - this.taskTime;
+    }
+
+    private static long getTime(String timeStr) {
+        double result =0;
+        String[] strArr = timeStr.split(":");
+        result += Double.parseDouble(strArr[0])*60*60; // 시간을 초로 환산
+        result += Double.parseDouble(strArr[1])*60; // 분을 초로 환산
+        result += Double.parseDouble(strArr[2]);
+
+        return (long)(result*1000);
     }
 }
 
