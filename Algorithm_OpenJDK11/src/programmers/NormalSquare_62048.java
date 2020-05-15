@@ -9,20 +9,31 @@ public class NormalSquare_62048 {
         long result = 0;  // 총 사각형 갯수
         for(int y=h-1; y>=0; y--) {
             double x = getX(y, w, h);
-            result += (long)(w-x);
+            result += w-x;
         }
         result *=2;
         return result;
     }
 
-    private static double getX(int y, int w, int h) {
-        return (h-y)/((double)h/w);
+    private static long getX(int y, int w, int h) {
+        double num = (h-y)/((double)h/w);
+        long result;
+        if(num -(long)num> Math.ulp(num)) {
+            result = (long) num+1;
+        } else {
+            result = (long)num;
+        }
+        return result;
     }
 
     public static void main(String[] args) {
-        int W =2;
-        int H =2;
+        int W =8;
+        int H =12;
         System.out.println(solution(W,H));
+//        double a = 1.3333333333333333;
+//        System.out.println(Math.ulp(1.0));
+//        System.out.println(Math.ulp(a));
+//        System.out.println((int)a-Math.ulp(a));
     }
 }
 
