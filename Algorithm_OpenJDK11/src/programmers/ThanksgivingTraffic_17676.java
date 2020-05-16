@@ -1,11 +1,10 @@
 package programmers;
 
-import java.util.HashMap;
-import java.util.Iterator;
+import java.util.ArrayList;
 
 public class ThanksgivingTraffic_17676 {
     public static void main(String[] args) {
-        String[] lines = {"2016-09-15 20:59:57.421 0.351s",
+/*        String[] lines = {"2016-09-15 20:59:57.421 0.351s",
                 "2016-09-15 20:59:58.233 1.181s",
                 "2016-09-15 20:59:58.299 0.8s",
                 "2016-09-15 20:59:58.688 1.041s",
@@ -14,101 +13,54 @@ public class ThanksgivingTraffic_17676 {
                 "2016-09-15 21:00:00.741 1.581s",
                 "2016-09-15 21:00:00.748 2.31s",
                 "2016-09-15 21:00:00.966 0.381s",
-                "2016-09-15 21:00:02.066 2.62s"};
+                "2016-09-15 21:00:02.066 2.62s"};*/
+        String[] lines = {"2016-09-15 01:00:04.001 2.0s", "2016-09-15 01:00:07.000 2s"};
         System.out.println(solution(lines));
     }
 
     private static int solution(String[] lines) {
-        return getMaxTasks(getMap(lines));
+        return getMaxTasks(getList(lines));
     }
 
-    private static int getMaxTasks(HashMap<Integer, HashMap> map) {
+    private static int getMaxTasks(ArrayList<MyLog> logList) { // 이 로그를 관리하자
         int max =0;
             // 시간 가져오기
-        Iterator<Integer> hourIt = map.keySet().iterator();
-        while(hourIt.hasNext()) {   // 시간 맵 가져오기
-            int hour = hourIt.next();
-            HashMap<Integer, HashMap> hourMap = map.get(hour);
-            Iterator<Integer> minIt = hourMap.keySet().iterator();
-            while(minIt.hasNext()) {    // 분 맵 가져오기
-                int min = minIt.next();
-                HashMap<Integer, Integer> minMap = hourMap.get(min);
-                Iterator<Integer> secKeys = minMap.keySet().iterator();
-                while(secKeys.hasNext()) {
-                    int sec = secKeys.next();
-                    max = Math.max(max, minMap.get(sec));   // task 최대 입력
-                    System.out.println(hour + " : " + min + " : " + sec + "  => " + minMap.get(sec));
-                }
-            }
+
+        for(MyLog log : logList) {
+            max = Math.max(getCount(log, logList), max);
+            System.out.println(log.startTime);
+            System.out.println(log.endTime);
+            System.out.println();
         }
         return max;
     }
 
-    private static HashMap<Integer, HashMap> getMap(String[] lines) {
-        HashMap<Integer, HashMap> resultMap = new HashMap<>();
+    private static int getCount(MyLog origin, ArrayList<MyLog> logList) {
+        int count =1;
+
+        for(MyLog log : logList) {
+            if(isOneProcess(origin.endTime-1, log)) {
+                count++;
+            }
+        }
+        return count-1;
+    }
+
+    private static boolean isOneProcess(long endTime, MyLog log) {
+        return log.endTime >= endTime && log.startTime <= endTime + 1000 ? true : false;
+    }
+    private static ArrayList<MyLog> getList(String[] lines) {
+        ArrayList<MyLog> resultList = new ArrayList<>();
 
         for(String line : lines) {
             // 0 : 년월일, 1 : 완료 시간, 2 : 걸린 시간
             String[] infoArr = line.split(" ");
-//            setResultMap(getTime(infoArr[1]), getProcessTime(infoArr[2]), resultMap);
-        }
-        return resultMap;
-    }
+            resultList.add(new MyLog(infoArr[1], getProcessTime(infoArr[2])));
 
-    private static HashMap<Integer, HashMap> setResultMap(double endTime, double processTime, HashMap<Integer, HashMap> map) {
-        double startTime = endTime - processTime;
-
-        for(int i=(int)startTime; i<=(int)endTime; i++) {   //
-            addTask(i, map);
-//            System.out.println("hour : " + hour + "\t min : " + min + "\t sec : " + sec);
-        }
-//        addTask((int)endTime,map);
-//        System.out.println(map.size());
-        return map;
-    }
-
-    private static HashMap<Integer, HashMap> addTask(int i, HashMap<Integer, HashMap> map) {
-        int hour = i/60/60;
-        int min = (i-(hour*60*60))/60;
-        int sec = i-(hour*60*60) - min*60;
-        HashMap<Integer, HashMap> hourMap;  // key : 분, value : 분 Map
-        if(map.containsKey(hour)) { // hour
-            hourMap = map.get(hour);    // 전체 맵에서 hour 겟
-            HashMap<Integer, Integer> minMap;   // key : 초, value : task 수
-            if(hourMap.containsKey(min)) {  // min
-                minMap = hourMap.get(min);  // hour에서 min 겟
-                if(minMap.containsKey(sec)) {   // sec
-                    minMap.replace(sec, minMap.get(sec)+1); // 작업 추가
-                } else {    // sec 없음
-                    minMap.put(sec, 1); // sec 만들기
-                }
-                hourMap.replace(min, minMap);   //hour update
-            } else {    // min 없음
-                minMap = new HashMap<>();
-                minMap.put(sec, 1); // min에 sec와 테스크 수 넣고
-                hourMap.put(min, minMap);   //hour update
-            }
-            map.replace(hour, hourMap); // map update
-        } else {    // hour 없음
-            hourMap = new HashMap<>();
-            HashMap<Integer, Integer> minMap = new HashMap<>();    // min Map
-            minMap.put(sec, 1);    // min에 sec 추가
-            hourMap.put(min, minMap);  // hour에 min 추가
-            map.put(hour, hourMap);
         }
 
-        return map;
+        return resultList;
     }
-
-    /*private static double getTime(String timeStr) {
-        double result =0;
-        String[] strArr = timeStr.split(":");
-        result += Double.parseDouble(strArr[0])*60*60; // 시간을 초로 환산
-        result += Double.parseDouble(strArr[1])*60; // 분을 초로 환산
-        result += Double.parseDouble(strArr[2]);
-
-        return result;
-    }*/
 
     private static double getProcessTime(String timeStr) {
         return Double.parseDouble(timeStr.replaceAll("s",""));
@@ -130,7 +82,7 @@ class MyLog {
 
 
     private void setStartTime() {
-        this.startTime = endTime - this.taskTime;
+        this.startTime = endTime - this.taskTime +1;
     }
 
     private static long getTime(String timeStr) {
