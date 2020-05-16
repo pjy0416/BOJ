@@ -36,14 +36,14 @@ public class ThanksgivingTraffic_17676 {
     }
 
     private static int getCount(MyLog origin, ArrayList<MyLog> logList) {
-        int count =1;
+        int count =0;
 
         for(MyLog log : logList) {
             if(isOneProcess(origin.endTime-1, log)) {
                 count++;
             }
         }
-        return count-1;
+        return count;
     }
 
     private static boolean isOneProcess(long endTime, MyLog log) {
