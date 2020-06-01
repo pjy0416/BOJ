@@ -11,7 +11,49 @@ public class KitStackQueueDevelopFunction {
         solution(progresses,speeds);
     }
 
+    final static int COMPLETE = 100;
+
     private static int[] solution(int[] progresses, int[] speeds) {
+        LinkedList<Integer> dayList = getDays(progresses, speeds);
+        LinkedList<Integer> ansList = new LinkedList<>();
+
+        while(!dayList.isEmpty()) {
+            int standard = dayList.poll();
+            int cnt =1;
+            if(dayList.isEmpty()) {
+                ansList.offer(cnt);
+                break;
+            }
+            while(standard >= dayList.peek()) {
+                cnt++;
+                dayList.poll();
+                if(dayList.isEmpty()) {
+                    break;
+                }
+            }
+            ansList.offer(cnt);
+        }
+        int[] answer = new int[ansList.size()];
+        for(int i=0; i<answer.length; i++) {
+            answer[i] = ansList.poll();
+        }
+
+        return answer;
+    }
+
+    private static LinkedList<Integer> getDays(int[] progresses, int[] speeds) {
+        LinkedList<Integer> result = new LinkedList<>();
+        for(int i=0; i<speeds.length; i++) {
+            int day = (COMPLETE -progresses[i])/speeds[i];
+            if((COMPLETE-progresses[i])%speeds[i] !=0) {
+                day++;
+            }
+            result.offer(day);
+        }
+        return result;
+    }
+
+    /*private static int[] solution(int[] progresses, int[] speeds) {
         int[] answer;
 
         Queue<Integer> developed = new LinkedList<>();
@@ -57,7 +99,7 @@ public class KitStackQueueDevelopFunction {
         }
 
         return answer;
-    }
+    }*/
 }
 
 /*
