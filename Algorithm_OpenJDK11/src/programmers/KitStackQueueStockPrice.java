@@ -4,7 +4,7 @@ import java.util.Stack;
 
 public class KitStackQueueStockPrice {
 
-    private static int[] solution(int[] prices) {
+    private static int[] solution(int[] prices) {   // 첫번째 푼 풀이
         int len = prices.length;
         int[] answer = new int[len];
 
@@ -43,6 +43,25 @@ public class KitStackQueueStockPrice {
         answer[len-1] =0;
         return answer;
     }
+
+    /*
+    public int[] solution(int[] prices) {   // 2020.06.02 다시 품
+        int[] answer = new int [prices.length];
+        for(int i=0; i<prices.length-1; i++) {
+            int prev = prices[i];
+            for(int j=i; j<prices.length; j++) {
+                if(i!=j) {
+                    answer[i]++;
+                    if(prev > prices[j]) {
+                        break;
+                    }
+                }
+            }
+        }
+
+        return answer;
+    }
+     */
 
     public static void main(String[] args) {
         int[] prices = {5, 6, 3, 7, 9, 2};
