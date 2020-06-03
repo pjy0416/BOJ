@@ -42,20 +42,30 @@ public class KitGreedyMakeMaxNumber {
 
         return answer;
     }
+    /*
+    private static String solution(String number, int k) {
+        return getAnswer(number, k);
+    }
 
-    /*private static void combination(String str, String number, int k, int index) {    // Time over
-        if(k==0){
-            numList.add(str);
-            return;
+    private static String getAnswer(String number, int k) {
+        StringBuffer sb = new StringBuffer();
+        int len = number.length();
+        int idx =0;
+        for(int i=0; i<len-k; i++) {
+            char max = ZERO;
+            for(int j=idx; j<=i+k; j++) {
+                char ch = number.charAt(j);
+                if(max < ch) {
+                    max = ch;
+                    idx = j+1;
+                }
+            }
+            sb.append(max);
         }
+        return sb.toString();
+    }
+     */
 
-        if(index == number.length()) {
-            return;
-        }
-
-        combination(str+number.substring(index,index+1), number, k-1, index+1);//뽑는경우
-        combination(str, number, k, index+1);//안뽑는경우
-    }*/
 
     public static void main(String[] args) {
 //        String number = "1924";
