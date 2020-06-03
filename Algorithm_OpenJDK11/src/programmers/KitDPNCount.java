@@ -63,7 +63,38 @@ public class KitDPNCount {
 
         return result;
     }
+    /*
+    static int answer;
+    private static int solution(int N, int number) {
+        answer = 9;
+        dfs(0, 0, N, number);
+        return answer > 8 ? -1 : answer;
+    }
 
+    private static void dfs(int cnt, int number, int N, int target) {
+        if(cnt >8) {
+            return;
+        }
+        if(number == target) {
+            answer = Math.min(answer, cnt);
+            return;
+        }
+
+        for(int i=1; i<=8-cnt; i++) {   // digit
+            dfs(cnt+i, number+getNum(i,N), N, target);
+            dfs(cnt+i, number-getNum(i,N), N, target);
+            dfs(cnt+i, number/getNum(i,N), N, target);
+            dfs(cnt+i, number*getNum(i,N), N, target);
+        }
+    }
+    private static int getNum(int digit, int N) {
+        int result =0;
+        for(int i=0; i<digit; i++) {
+            result += Math.pow(10,i)*N;
+        }
+        return result;
+    }
+     */
     public static void main(String[] args) {
         int N = 5, number = 12;
 //        int N = 2, number = 11;
