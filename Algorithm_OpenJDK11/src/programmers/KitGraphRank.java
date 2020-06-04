@@ -57,6 +57,53 @@ public class KitGraphRank {
         return match1;
     }
 
+    /*
+    private static int solution(int n, int[][] results) {
+        int answer = 0;
+        int[][] matches = new int[n+1][n+1];
+        for(int[] match : results) {
+            matches[match[0]][match[1]] = 1; // 이김
+            matches[match[1]][match[0]] = -1; // 짐
+        }
+
+        // match 저장
+        for(int player=1; player<=n; player++) {
+            for(int enemy =1; enemy<=n; enemy++) {
+                if(matches[player][enemy] ==1) {    // 내가 이긴 애들
+                    for(int i=1; i<=n; i++) {
+                        if(matches[enemy][i] == 1) {    // 상대가 이긴 애들
+                            matches[player][i] =1; // 나도 이김
+                            matches[i][player] = -1;
+                        }
+                    }
+                } else if(matches[player][enemy] ==-1) {    // 내가 진 애들
+                    for(int i=1; i<=n; i++) {
+                        if(matches[player][i] ==1) { // 내가 이긴애들 다 이겨
+                            matches[enemy][i] =1;
+                            matches[i][enemy] =-1;
+                        }
+                    }
+                }
+            }
+        }
+
+        // count
+        for(int y=1; y<=n; y++) {
+            int cnt =0;
+            for(int x=1; x<=n; x++) {
+                if(matches[y][x] !=0) {
+                    cnt++;
+                }
+            }
+            if(cnt == n-1) {
+                answer++;
+            }
+        }
+
+        return answer;
+    }
+     */
+
     public static void main(String[] args) {
         int n=5;
         int[][] result = {{4, 3}, {4, 2}, {3, 2}, {1, 2}, {2, 5}};
