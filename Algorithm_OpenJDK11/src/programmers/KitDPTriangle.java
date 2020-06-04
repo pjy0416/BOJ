@@ -19,35 +19,22 @@ public class KitDPTriangle {
                     triangle[depth][idx] += Math.max(triangle[depth-1][left], triangle[depth-1][right]);
                 }
             }
-            for(int num : triangle[depth]) {
-                System.out.print(num + " ");
-            }
-            System.out.println();
         }
-        /*if(triangle.length ==1) {
-            return triangle[0][0];
-        }
-        if(triangle.length ==2) {
-            return Math.max(triangle[0][0]+triangle[1][0],triangle[0][0]+triangle[1][1]);
-        }
-        findNum(triangle[0][0], 0, 0, triangle, triangle.length-1);*/
         Arrays.sort(triangle[len-1]);
         return triangle[len-1][len-1];
     }
-
-    private static void findNum(int sum, int depth, int idx, int[][] triangle, int len) {
-        if(depth == len) {
-//            max = max < sum ? sum : max;
-            return;
+    /*
+    private static int solution(int[][] triangle) {
+        for(int y= triangle.length-2; y>=0; y--) {
+            for(int x=0; x<triangle[y].length; x++) {
+                int left = x;
+                int right = x+1;
+                triangle[y][x] += Math.max(triangle[y+1][left], triangle[y+1][right]);
+            }
         }
-
-        findNum(sum+triangle[depth+1][idx], depth+1, idx, triangle,len);
-        if(idx+1 <triangle[depth+1].length) {
-//            System.out.print("depth : " + depth + "\t idx : " + idx + " 에서\t");
-//            System.out.println("다음 Depth : " + (depth+1) + "\t idx : " + (idx+1) +"로 넘어감");
-            findNum(sum+triangle[depth+1][idx+1], depth+1, idx+1, triangle,len);
-        }
+        return triangle[0][0];
     }
+     */
     public static void main(String[] args) {
         int[][] triangle = {{7}, {3, 8}, {8, 1, 0}, {2, 7, 4, 4}, {4, 5, 2, 6, 5}};
 
