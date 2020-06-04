@@ -45,6 +45,29 @@ public class SkillTree_49993 {
         }
         return result;
     }
+    /*
+    private static int solution(String skill, String[] skill_trees) {
+        int answer = skill_trees.length;
+        HashMap<Character,Integer> skillMap = new HashMap<>();
+        for(int i=0; i<skill.length(); i++) {
+            skillMap.put(skill.charAt(i), (i+1));
+        }
+        for(String str : skill_trees) {
+            int idx =0;
+            for(int i=0; i<str.length(); i++) {
+                char ch = str.charAt(i);
+                if(skillMap.containsKey(ch)) { // 스킬 순서가 필요한 경우
+                    if(skillMap.get(ch) != idx+1) { // 순서에 안맞는 경우
+                        answer--;
+                        break;
+                    }
+                    idx++;
+                }
+            }
+        }
+        return answer;
+    }
+     */
 
     public static void main(String[] args) {
         String skill = "CBD";
