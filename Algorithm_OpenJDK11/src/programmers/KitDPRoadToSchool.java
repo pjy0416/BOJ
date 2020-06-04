@@ -32,14 +32,35 @@ public class KitDPRoadToSchool {
                 }
             }
         }
-        /*for(int[] y : map) {
-            for(int x : y) {
-                System.out.print(x + " ");
-            }
-            System.out.println();
-        }*/
         return map[n][m];
     }
+    /*
+    final static int[] dx = {-1,0};
+    final static int[] dy = {0,-1};
+
+    private static int solution(int m, int n, int[][] puddles) {
+        int[][] dp = new int[n+1][m+1];
+        final int MOD = 1000000007;
+        for(int[] puddle : puddles) {
+            dp[puddle[1]][puddle[0]] =-1;
+        }
+        dp[0][1] =1;
+        for(int y=1; y<=n; y++) {
+            for(int x=1; x<=m; x++) {
+                if(dp[y][x] != -1) {
+                    for(int i=0; i<2; i++) {
+                        int ny = y+dy[i];
+                        int nx = x+dx[i];
+                        if(dp[ny][nx] != -1) {
+                            dp[y][x] = (dp[y][x] + dp[ny][nx])%MOD;
+                        }
+                    }
+                }
+            }
+        }
+        return dp[n][m];
+    }
+     */
 
     public static void main(String[] args) {
         int m =4;
