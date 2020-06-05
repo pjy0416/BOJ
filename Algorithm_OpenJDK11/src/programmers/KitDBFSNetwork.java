@@ -61,6 +61,82 @@ public class KitDBFSNetwork {
 
         return result;
     }
+    /*
+    class Solution {    // dfs
+    int[] visit;
+    public int solution(int n, int[][] computers) {
+        int answer = 0;
+        visit = new int[n];
+        for(int i=0; i<computers.length; i++) {
+            if(visit[i] ==0) {
+                dfs(i, computers);
+                answer++;
+            }
+        }
+        return answer;
+    }
+
+    private void dfs(int idx, int[][] computers) {
+        if(visit[idx] == 0) {
+            visit[idx] =1;
+            for(int i=0; i<computers[idx].length; i++) {
+                if(computers[idx][i] ==1 && visit[i] ==0) {
+                    dfs(i, computers);
+                }
+            }
+        }
+    }
+}
+     */
+
+    /*
+    import java.util.HashSet;
+
+class Solution { // find - union
+    int[] parents;
+    public int solution(int n, int[][] computers) {
+        int answer = 0;
+        inItParents(n);
+        for(int i=0; i<computers.length; i++) {
+            for(int j=0; j<computers[i].length; j++) {
+                if(computers[i][j] ==1) {
+                    if(find(i) != find(j)) {
+                        union(i,j);
+                    }
+                }
+            }
+        }
+
+        HashSet<Integer> set = new HashSet<>();
+        for(int num : parents) {
+            set.add(find(num));
+        }
+        return set.size();
+    }
+
+    private void inItParents(int n) {
+        parents = new int[n];
+        for(int i=0; i<n; i++) {
+            parents[i] = i;
+        }
+    }
+
+    private int find(int val) {
+        if(val == parents[val]) {
+            return val;
+        }
+        return parents[val] = find(parents[val]);
+    }
+
+    private void union(int val1, int val2) {
+        val1 = find(val1);
+        val2 = find(val2);
+        if(val1 != val2) {
+            parents[val2] = val1;
+        }
+    }
+}
+     */
 
     public static void main(String[] args) {
         int n = 3;
