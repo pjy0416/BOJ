@@ -63,6 +63,42 @@ public class KitBinarySearchBudget {
         }
         return result;
     }
+    /*
+    //풀이 3
+    public int solution(int[] budgets, int M) {
+        return binarySearch(budgets,M);
+    }
+
+    private int binarySearch(int[] budgets, int M) {
+        int result =0;
+        Arrays.sort(budgets);
+        int left = 1;
+        int right = budgets[budgets.length-1];
+
+        while(left <= right) {
+            int mid = (left+right)/2;
+            if(isInTotal(budgets,M,mid)) {  // 예산 통과 가능
+                result =mid;
+                left = mid+1;
+            } else { // 불가능
+                right =mid-1;
+            }
+        }
+        return result;
+    }
+
+    private boolean isInTotal(int[] budgets, int M, int limit) {
+        long sum =0;
+        for(int num : budgets) {
+            if(num > limit) {
+                sum += limit;
+            } else {
+                sum += num;
+            }
+        }
+        return sum <=M ? true : false;
+    }
+     */
 
     public static void main(String[] args) {
 //        int[] budget = {120, 110, 140, 150};
