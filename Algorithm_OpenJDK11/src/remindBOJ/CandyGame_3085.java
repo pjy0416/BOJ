@@ -3,91 +3,101 @@ package remindBOJ;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Arrays;
+import java.util.LinkedList;
 
 public class CandyGame_3085 {
-    private final static int[] dPos = {1,-1};
-    private static int n;
+    final static int[] dx = {0, 0,0,1,-1}, dy = {0, 1,-1,0,0};
+
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        n = Integer.parseInt(br.readLine());
-        char[][] map = new char[n][n];
+        int N = Integer.parseInt(br.readLine());
+        char[][] map = new char[N][];
 
-        for(int y=0; y<n; y++) {
-            map[y] = br.readLine().toCharArray();
+        for(int i=0; i<N; i++) {
+            map[i] = br.readLine().toCharArray();
         }
         br.close();
 
-        solution(map);
+        solution(map, N);
     }
 
-    private static void solution(char[][] map) {
+    private static void solution(char[][] map, int N) {
         int answer =0;
-        for(int y=0; y<n; y++) {
-            for(int x=0; x<n; x++) {
-                answer = Math.max(answer, Math.max(findVertical(x, map), findHorizontal(y, map)));
-                for(int i=0; i<2; i++) {
-                    int nx = x+dPos[i];
-                    int ny = y+dPos[i];
-                    if(isInArea(nx,y)) {
-                        map = swapX(x, nx, y, map);
-                        answer = Math.max(answer, findVertical(x, map));
-                        map = swapX(x, nx, y, map);
+
+        for(int y=0; y<N; y++) {
+            for(int x=0; x<N; x++) {
+                Pos originPos = new Pos(x,y);
+                for(int direction =0; direction<5; direction++) {
+                    Pos targetPos = new Pos(x + dx[direction], y + dy[direction]);
+                    if(!isInArea(targetPos,N)) {
+                        continue;
                     }
-                    if(isInArea(x,ny)) {
-                        map = swapY(y, ny, x, map);
-                        answer = Math.max(answer, findHorizontal(y,map));
-                        map = swapY(y, ny, x, map);
-                    }
+                    swapMap(map, originPos, targetPos);
+                    answer = Math.max(answer, getCandyCount(map, N, originPos));
+                    swapMap(map, originPos, targetPos);
                 }
             }
         }
+
         System.out.println(answer);
     }
 
-    private static boolean isInArea(int x, int y) {
-        return x>=0 && y>=0 && x<n && y<n;
+    private static boolean isInArea(Pos pos, int n) {
+        return pos.x >=0 && pos.y >=0 && pos.x <n && pos.y <n;
     }
 
-    private static char[][] swapX(int x, int nx, int y, char[][] map) {
-        char tmp = map[y][x];
-        map[y][x] = map[y][nx];
-        map[y][nx] = tmp;
-        return map;
-    }
-    private static char[][] swapY(int y, int ny, int x, char[][] map) {
-        char tmp = map[y][x];
-        map[y][x] = map[ny][x];
-        map[ny][x] = tmp;
-        return map;
+    private static void swapMap(char[][] map, Pos origin, Pos target) {
+        char tmp = map[origin.y][origin.x];
+        map[origin.y][origin.x] = map[target.y][target.x];
+        map[target.y][target.x] = tmp;
     }
 
-    private static int findVertical(int x, char[][] map) { // 세로 검색
-        int result =0;
-        int partialSum =1;
-        char prev = 'a';
+    private static int getCandyCount(char[][] map, int N, Pos originPos) {
+        boolean[] visit = new boolean[N];
+        int verticalCount =0, horizontalCount =0;
+        int[] directions = {1,-1};
+        LinkedList<Pos> moveList = new LinkedList<>();
+        moveList.push(originPos);
 
-        for(int y=0; y<n; y++) {
-            if(prev != map[y][x]) {
-                prev = map[y][x];
-                partialSum =1;
-            } else { partialSum++; }
-            result = Math.max(result,partialSum);
+        //vertical check
+        while(!moveList.isEmpty()) {
+            Pos now = moveList.poll();
+            verticalCount++;
+            visit[now.y] = true;
+            for(int i=0; i<2; i++) {
+                Pos movedPos = new Pos(now.x, now.y + directions[i]);
+                if(isInArea(movedPos, N) && !visit[movedPos.y] && map[now.y][now.x] == map[movedPos.y][movedPos.x]) {
+                    moveList.push(movedPos);
+                }
+            }
         }
-        return result;
 
-    }
-    private static int findHorizontal(int y, char[][] map) {    // 가로 검색
-        int result =0;
-        int partialSum =1;
-        char prev = 'a';
+        Arrays.fill(visit, false);
+        moveList.push(originPos);
 
-        for(int x=0; x<n; x++) {
-            if(prev != map[y][x]) {
-                prev = map[y][x];
-                partialSum =1;
-            } else { partialSum++; }
-            result = Math.max(result,partialSum);
+        //horizontal check
+        while(!moveList.isEmpty()) {
+            Pos now = moveList.poll();
+            horizontalCount++;
+            visit[now.x] = true;
+            for(int i=0; i<2; i++) {
+                Pos movedPos = new Pos(now.x + directions[i], now.y);
+                if(isInArea(movedPos, N) && !visit[movedPos.x] && map[now.y][now.x] == map[movedPos.y][movedPos.x]) {
+                    moveList.push(movedPos);
+                }
+            }
         }
-        return result;
+        return Math.max(verticalCount, horizontalCount);
+    }
+
+
+    private static class Pos {
+        int x,y;
+
+        public Pos(int x, int y) {
+            this.x = x;
+            this.y = y;
+        }
     }
 }
