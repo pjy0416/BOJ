@@ -26,12 +26,8 @@ public class Tree_1068 {
 
     private static void solution(int removeNode, int n) {
         parents[removeNode] = REMOVED;
-        for(int i=0; i<n; i++) {
-            if(find(parents[i]) == removeNode) { // 제거해야함
-                union(i, removeNode);
-            }
-        }
         int answer =0;
+
         for(int i=0; i<n; i++) {
             if(parents[i] != REMOVED) { // 자신이 루트가 아니고 지워지지 않은 경우
                 answer += find(parents[i]) != REMOVED && !hasChildren(i) ? ADDITIONAL : ZERO;
@@ -56,13 +52,5 @@ public class Tree_1068 {
             return val;
         }
         return find(parents[val]);
-    }
-
-    private static void union(int left, int right) {
-        left = find(left);
-        right = find(right);
-        if(left != right) {
-            parents[left] = right;
-        }
     }
 }
