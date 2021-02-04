@@ -20,14 +20,14 @@ public class GridPath_10164 {
   private static void solution(int n, int m, int mark) {
     int[][] dp = new int[n+1][m+1];
     dp[0][1] =1;
-    int[] markPos = getMarkedPosition(n,m,mark);
+    int[] markPos = getMarkedPosition(m,mark);
 
     setPathCount(dp, 1,1, markPos[0], markPos[1]);
     setPathCount(dp, markPos[0], markPos[1], n, m);
     System.out.println(dp[n][m]/2);
   }
 
-  private static int[] getMarkedPosition(int n, int m, int mark) {
+  private static int[] getMarkedPosition(int m, int mark) {
     int divN = mark/m, divM = mark%m;
     if(isNoMarked(divN, divM)) {
       divM++;
