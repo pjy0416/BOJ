@@ -10,36 +10,49 @@ public class HeightOrder_2458 {
     BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     StringTokenizer st = new StringTokenizer(br.readLine());
     int n = Integer.parseInt(st.nextToken()), m = Integer.parseInt(st.nextToken());
-    boolean[][] isTall = new boolean[n+1][n+1], isSmall = new boolean[n+1][n+1];
+    boolean[][] isTall = new boolean[n+1][n+1];
 
     while(m-- >0) {
       st = new StringTokenizer(br.readLine());
       int smaller = Integer.parseInt(st.nextToken()), taller = Integer.parseInt(st.nextToken());
       isTall[taller][smaller] = true;
-      isSmall[smaller][taller] = true;
     }
 
     br.close();
-    solution(n, isTall, isSmall);
+    solution(n, isTall);
   }
 
-  private static void solution(int n, boolean[][] isTall, boolean[][] isSmall) {
-    int answer =0;
+  private static void solution(int n, boolean[][] isTall) {
     floydWarshall(n, isTall);
-    floydWarshall(n, isSmall);
+    int[] count = getCountArr(n, isTall);
+    int answer = getAnswer(n, count);
 
+    System.out.println(answer);
+  }
+
+  private static int getAnswer(int n, int[] count) {
+    int answer =0;
+    final int MAX = n-1;
     for(int i=1; i<=n; i++) {
-      int count =0;
-      for(int j=1; j<=n; j++) {
-        if(isTall[i][j] || isSmall[i][j]) {
-          count++;
-        }
-      }
-      if(count == n-1) {
+      if(count[i] == MAX) {
         answer++;
       }
     }
-    System.out.println(answer);
+    return answer;
+  }
+
+  private static int[] getCountArr(int n, boolean[][] isTall) {
+    int[] count = new int[n+1];
+
+    for(int i=1; i<=n; i++) {
+      for(int j=1; j<=n; j++) {
+        if(isTall[i][j]) {
+          count[i]++;
+          count[j]++;
+        }
+      }
+    }
+    return count;
   }
 
   private static void floydWarshall(int n, boolean[][] arr) {
