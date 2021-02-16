@@ -3,8 +3,8 @@ package remindBOJ;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayDeque;
 import java.util.Arrays;
-import java.util.PriorityQueue;
 import java.util.StringTokenizer;
 
 public class HideAndSeek_13549 {
@@ -21,13 +21,13 @@ public class HideAndSeek_13549 {
   private static void solution(int subin, int sister) {
     int answer = 0;
     int[] costArr = initCostArr();
-    PriorityQueue<Pos> pq = new PriorityQueue<>();
-    pq.offer(new Pos(subin, 0));
+    ArrayDeque<Pos> arrayDeque = new ArrayDeque<>();
+    arrayDeque.offer(new Pos(subin, 0));
 
     int[] directions = new int[] {1,-1,0}, dCost = {1,1,0};
 
-    while(!pq.isEmpty()) {
-      Pos now = pq.poll();
+    while(!arrayDeque.isEmpty()) {
+      Pos now = arrayDeque.poll();
       if(now.location == sister) {
         answer = now.cost;
         break;
@@ -36,7 +36,14 @@ public class HideAndSeek_13549 {
       for(int i=0; i<DIRECTIONS_LENGTH; i++) {
         int nextLocation = now.location + directions[i], nextCost = now.cost + dCost[i];
         if(isInRange(nextLocation) && costArr[nextLocation] > nextCost) {
-          pq.offer(new Pos(nextLocation, nextCost));
+          Pos next = new Pos(nextLocation, nextCost);
+          if(arrayDeque.isEmpty()) {
+            arrayDeque.offer(next);
+          } else if(arrayDeque.peek().cost < nextCost) {
+            arrayDeque.offer(next);
+          } else {
+            arrayDeque.offerFirst(next);
+          }
           costArr[nextLocation] = nextCost;
         }
       }
@@ -55,17 +62,12 @@ public class HideAndSeek_13549 {
     return costArr;
   }
 
-  private static class Pos implements Comparable<Pos> {
+  private static class Pos {
     int location, cost;
 
     public Pos(int location, int cost) {
       this.location = location;
       this.cost = cost;
-    }
-
-    @Override
-    public int compareTo(Pos pos) {
-      return this.cost - pos.cost;
     }
   }
 }
