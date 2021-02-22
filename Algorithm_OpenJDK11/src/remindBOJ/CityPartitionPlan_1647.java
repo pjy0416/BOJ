@@ -3,70 +3,84 @@ package remindBOJ;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.PriorityQueue;
 import java.util.StringTokenizer;
 
+/*
+ * 지금 코드 : Kruskal 알고리즘
+ * 이전 코드 : Prim 알고리즘ㅎ
+ */
+
 public class CityPartitionPlan_1647 {
+  static int[] parents;
+
   public static void main(String[] args) throws IOException {
     BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     StringTokenizer st = new StringTokenizer(br.readLine());
     int n = Integer.parseInt(st.nextToken()), m = Integer.parseInt(st.nextToken());
-    List<Route>[] routes = new ArrayList[n+1];
-    for(int i=1; i<=n; i++) {
-      routes[i] = new ArrayList<>();
-    }
+    PriorityQueue<Edge> edgePQ = new PriorityQueue<>();
 
     while(m-- >0) {
       st = new StringTokenizer(br.readLine());
-      int left = Integer.parseInt(st.nextToken()), right = Integer.parseInt(st.nextToken()), cost = Integer.parseInt(st.nextToken());
-      routes[left].add(new Route(right,cost));
-      routes[right].add(new Route(left, cost));
+      int start = Integer.parseInt(st.nextToken()), end = Integer.parseInt(st.nextToken()), cost = Integer.parseInt(st.nextToken());
+      edgePQ.offer(new Edge(start, end, cost));
     }
 
     br.close();
-    solution(routes,n);
+    solution(edgePQ,n);
   }
 
-  private static void solution(List<Route>[] routes, int n) {
-    int answer = 0, max =0;
-    PriorityQueue<Route> pq = new PriorityQueue<>();
-    boolean[] visit = new boolean[n+1];
-    for(Route route : routes[1]) {
-      pq.offer(route);
-    }
-    visit[1] = true;
+  private static void solution(PriorityQueue<Edge> edgePQ, int n) {
+    initParents(n);
+    int remain = n-2; // 1번과 모두 연결되는 경로 중 가장 큰 경로 제외
+    int answer =0;
 
-    while(!pq.isEmpty()) {
-      Route now = pq.poll();
-      if(visit[now.vertex]) {
-        continue;
-      }
-      answer += now.cost;
-      max = Math.max(now.cost, max);
-      visit[now.vertex] = true;
-      List<Route> nextCities = routes[now.vertex];
-      for(Route next : nextCities) {
-        if(!visit[next.vertex]) { // 이동
-          pq.offer(next);
-        }
+    while(remain >0) {
+      Edge edge = edgePQ.poll();
+      if(union(edge.start, edge.end)) {
+        answer+= edge.cost;
+        remain--;
       }
     }
-    System.out.println(answer-max);
+    System.out.println(answer);
   }
 
-  private static class Route implements Comparable<Route> {
-    int vertex, cost;
+  private static void initParents(int n) {
+    parents = new int[n+1];
+    for(int i=1; i<=n; i++) {
+      parents[i] = i;
+    }
+  }
 
-    public Route(int vertex, int cost) {
-      this.vertex = vertex;
+  private static int find(int x) {
+    if(parents[x] == x) {
+      return x;
+    }
+    return parents[x] = find(parents[x]);
+  }
+
+  private static boolean union(int val1, int val2) {
+    val1 = find(val1);
+    val2 = find(val2);
+    if(val1 == val2) {
+      return false;
+    }
+    parents[val1] = val2;
+    return true;
+  }
+
+  private static class Edge implements Comparable<Edge> {
+    int start, end, cost;
+
+    public Edge(int start, int end, int cost) {
+      this.start = start;
+      this.end = end;
       this.cost = cost;
     }
 
     @Override
-    public int compareTo(Route route) {
-      return this.cost - route.cost;
+    public int compareTo(Edge edge) {
+      return this.cost - edge.cost;
     }
   }
 }
